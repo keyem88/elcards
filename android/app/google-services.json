@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "529227089299",
+    "project_id": "elcards-bd778",
+    "storage_bucket": "elcards-bd778.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:529227089299:android:a1930287ea097254345466",
+        "android_client_info": {
+          "package_name": "com.meister.elcards"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjvR1erUKdoYVwYWL1AQXopIXM4MZEnlo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

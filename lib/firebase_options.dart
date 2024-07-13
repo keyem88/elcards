@@ -72,4 +72,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'elcards-bd778.appspot.com',
     iosBundleId: 'com.meister.elcards',
   );
+
 }

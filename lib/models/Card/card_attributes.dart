@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:myapp/models/card_element.dart';
+import 'package:myapp/models/Card/card_element.dart';
 
 class CardAttribute {
   static List<Map<String, int>> attributes = [

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:myapp/config/themes/app_colors.dart';
 
 enum CardLevel {
   bronze(1),
@@ -16,7 +17,7 @@ enum CardLevel {
     //return Level bronze with a probability of 0.5, silver with a probability of 0.3, and gold with a probability of 0.15
     //and diamond with a probability of 0.05
     final random = Random().nextDouble();
-    switch (random){
+    switch (random) {
       case <= 0.5:
         return CardLevel.bronze;
       case <= 0.8:
@@ -46,13 +47,13 @@ enum CardLevel {
   Color get asColor {
     switch (this) {
       case CardLevel.bronze:
-        return const Color.fromRGBO(205, 127, 50, 1.0);
+        return AppColors.bronze;
       case CardLevel.silver:
-        return const Color.fromRGBO(192, 192, 192, 1.0);
+        return AppColors.silver;
       case CardLevel.gold:
-        return const Color.fromRGBO(212, 175, 55, 1.0);
+        return AppColors.gold;
       case CardLevel.diamond:
-        return Colors.cyan;
+        return AppColors.diamond;
     }
   }
 
@@ -69,7 +70,7 @@ enum CardLevel {
     }
   }
 
-  int get maxLivePoints{
+  int get maxLivePoints {
     switch (this) {
       case CardLevel.bronze:
         return 1;

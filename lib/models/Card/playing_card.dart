@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:myapp/models/card_attributes.dart';
-import 'package:myapp/models/card_element.dart';
-import 'package:myapp/models/card_level.dart';
+import 'package:myapp/models/Card/card_attributes.dart';
+import 'package:myapp/models/Card/card_element.dart';
+import 'package:myapp/models/Card/card_level.dart';
 
 class PlayingCard {
   static final _random = Random();
@@ -46,9 +46,11 @@ class PlayingCard {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'element': cardElement.internalRepresentation,
-    'level': cardLevel.internalRepresentation,
-    'number': cardNumber,
-      };
+  Map<String, dynamic> toJson() {
+    return {
+      'element': cardElement.internalRepresentation,
+      'level': cardLevel.internalRepresentation,
+      'number': cardNumber,
+    };
+  }
 }

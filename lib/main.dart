@@ -7,7 +7,6 @@ import 'package:myapp/views/Other/initial_loading.dart';
 import 'package:myapp/views/Other/sign_up_view.dart';
 import 'database/firebase/auth.dart';
 import 'utils/constants/app_constants.dart';
-import 'views/Cards/my_cards_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

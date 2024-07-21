@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/controller/main_menu_controller.dart';
-import 'package:myapp/views/Cards/my_cards_view.dart';
 
 import '../main_menu_view.dart';
 
 class InitialLoadingView extends StatelessWidget {
   InitialLoadingView({super.key});
 
-  var controller = Get.put(
+  final controller = Get.put(
     MainMenuController(),
   );
 

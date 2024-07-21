@@ -5,7 +5,7 @@ import 'package:myapp/controller/main_menu_controller.dart';
 class GameMainMenu extends StatelessWidget {
   GameMainMenu({super.key});
 
-  MainMenuController controller = Get.put(
+  final MainMenuController controller = Get.put(
     MainMenuController(),
   );
 

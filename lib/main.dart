@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
+      debugShowCheckedModeBanner: false,
       home: FirebaseAuthentication.isUserLogged() ? InitialLoadingView() : const SignUpView(),
     );
   }

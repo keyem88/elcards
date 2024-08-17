@@ -3,11 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/controller/game_controller.dart';
 import 'package:myapp/database/firebase/firestore_database.dart';
+import 'package:myapp/models/Card/playing_card.dart';
 import 'package:myapp/models/User/user.dart';
+import 'package:myapp/utils/constants/app_constants.dart';
 import 'package:myapp/views/Cards/my_cards_view.dart';
+import 'package:myapp/views/Cards/show_card_view.dart';
 import 'package:myapp/views/Game/game_main_view.dart';
 import 'package:myapp/views/Game/join_game_view.dart';
 import 'package:myapp/views/Game/start_new_game_view.dart';
+import 'package:myapp/utils/permissions/permission_checker.dart';
+import 'package:myapp/widgets/cards/card_widget.dart';
 
 class MainMenuController extends GetxController {
   ElCardsUser? user;
@@ -40,26 +45,56 @@ class MainMenuController extends GetxController {
     update();
   }
 
-  void clickJoinGameButton() {
-    debugPrint('clickJoinGameButton');
-    Get.to(
-      () => JoinGameView(
-        controller: GameController(
-          user: user!,
-        ),
-      ),
-    );
+  void clickOnCard(BuildContext context, int index) {
+    debugPrint('clickOnCard $index');
+    showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (context) => CardWidget(card: user!.cardSet.cards[index]));
   }
 
-  void clickStartOwnGameButton() {
-    debugPrint('clickStartOwnGameButton');
-    Get.to(
-      () => StartNewGameView(
-        controller: GameController(
-          user: user!,
+  void clickJoinGameButton() async {
+    debugPrint('clickJoinGameButton');
+    if (await PermissionChecker.checkAllPermissions()) {
+      Get.to(
+        () => JoinGameView(
+          controller: GameController(
+            deviceType: DeviceType.advicer,
+            user: user!,
+          ),
         ),
-      ),
+      );
+    } else {
+      Get.snackbar('Error', 'Please grant all permissions');
+    }
+  }
+
+  void clickStartOwnGameButton() async {
+    debugPrint('clickStartOwnGameButton');
+    if (await PermissionChecker.checkAllPermissions()) {
+      startOwnGame();
+    } else {
+      Get.snackbar('Error', 'Please grant all permissions');
+    }
+  }
+
+  Future<void> startOwnGame() async {
+    debugPrint('startOwnGame');
+    GameController gameController = GameController(
+      deviceType: DeviceType.browser,
+      user: user!,
     );
+    String? error = await gameController.createGame();
+    if (error != null) {
+      Get.snackbar('Error', error);
+      return;
+    } else {
+      Get.to(
+        () => StartNewGameView(
+          controller: gameController,
+        ),
+      );
+    }
   }
 
   @override

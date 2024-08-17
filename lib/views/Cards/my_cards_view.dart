@@ -19,6 +19,9 @@ class MyCardsView extends StatelessWidget {
       itemCount: controller.user?.cardSet.cards.length,
       itemBuilder: (context, index) {
         return ListTile(
+          onTap: () {
+            controller.clickOnCard(context, index);
+          },
           leading: CircleAvatar(
             backgroundColor:
                 controller.user?.cardSet.cards[index].cardLevel.asColor,

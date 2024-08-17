@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/config/themes/app_colors.dart';
 import 'package:myapp/utils/constants/app_constants.dart';
+import 'package:myapp/views/Settings/settings_view.dart';
 
 import '../controller/main_menu_controller.dart';
 import '../database/firebase/auth.dart';
@@ -19,18 +20,38 @@ class MainMenuView extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: AppColors.primary,
           title: Text(AppConstants.appName),
-          centerTitle: true,
           actions: [
-            IconButton(
+            PopupMenuButton(
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  child: TextButton.icon(
+                    onPressed: () {
+                      FirebaseAuthentication.signOut();
+                      Get.offAllNamed(AppConstants.loginRoute);
+                    },
+                    icon: const Icon(Icons.logout),
+                    label: const Text('Logout'),
+                  ),
+                ),
+              ],
+            ),
+            TextButton.icon(
               onPressed: () {
-                FirebaseAuthentication.signOut();
-                Get.offAllNamed(AppConstants.loginRoute);
+                Get.to(
+                  () => SettingsView(),
+                );
               },
-              icon: const Icon(Icons.logout),
+              icon: const Icon(Icons.settings),
+              label: const Text('Settings'),
             ),
           ],
         ),
         body: Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
           return controller.pages[controller.selectedIndex.value];
         }),
         bottomNavigationBar: Obx(

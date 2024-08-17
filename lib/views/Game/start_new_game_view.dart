@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:myapp/controller/game_controller.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
@@ -15,7 +17,9 @@ class StartNewGameView extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: PrettyQrView.data(
-          data: DateTime.now().toString(),
+          data: jsonEncode(
+            controller.game.asMap(),
+          ),
         ),
       ),
     );

@@ -6,7 +6,7 @@ import 'package:myapp/models/Card/card_level.dart';
 
 class PlayingCard {
   static final _random = Random();
-  
+
   CardElement cardElement;
   CardLevel cardLevel;
   int cardNumber;
@@ -15,19 +15,24 @@ class PlayingCard {
   late int speed;
   late int maxLivePoints;
   late String name;
+  late String description;
 
-
-
-  PlayingCard(this.cardElement, this.cardLevel, this.cardNumber){
+  PlayingCard(this.cardElement, this.cardLevel, this.cardNumber) {
     double multiplicator = cardLevel.multiplicator;
-    attack = (CardAttribute.attributes[cardNumber - 1]['attack']! * multiplicator).ceil();
-    defense = (CardAttribute.attributes[cardNumber - 1]['defense']!* multiplicator).ceil();
-    speed = (CardAttribute.attributes[cardNumber - 1]['speed']!* multiplicator).ceil();
+    attack =
+        (CardAttribute.attributes[cardNumber - 1]['attack']! * multiplicator)
+            .ceil();
+    defense =
+        (CardAttribute.attributes[cardNumber - 1]['defense']! * multiplicator)
+            .ceil();
+    speed = (CardAttribute.attributes[cardNumber - 1]['speed']! * multiplicator)
+        .ceil();
     maxLivePoints = cardLevel.maxLivePoints;
     name = CardAttribute().getName(cardElement, cardNumber);
+    description = CardAttribute().getDescription(cardElement, cardNumber);
   }
 
-    factory PlayingCard.fromJson(Map<String, dynamic> json) {
+  factory PlayingCard.fromJson(Map<String, dynamic> json) {
     return PlayingCard(
       CardElement.values
           .singleWhere((e) => e.internalRepresentation == json['element']),
@@ -35,6 +40,10 @@ class PlayingCard {
           .singleWhere((e) => e.internalRepresentation == json['level']),
       json['number'],
     );
+  }
+
+  int get valency {
+    return attack + defense + speed;
   }
 
   factory PlayingCard.random([Random? random]) {

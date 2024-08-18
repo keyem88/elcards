@@ -11,7 +11,7 @@ enum CardElement {
   final int internalRepresentation;
 
   const CardElement(this.internalRepresentation);
-  
+
   factory CardElement.random() {
     final random = Random();
     return values[random.nextInt(values.length)];
@@ -29,6 +29,7 @@ enum CardElement {
         return 'Ground';
     }
   }
+
   IconData get asIcon {
     switch (this) {
       case CardElement.fire:
@@ -42,7 +43,33 @@ enum CardElement {
     }
   }
 
-  bool beats(CardElement otherElement){
+  CardElement lowerElement() {
+    switch (this) {
+      case CardElement.fire:
+        return CardElement.ground;
+      case CardElement.ground:
+        return CardElement.air;
+      case CardElement.air:
+        return CardElement.water;
+      case CardElement.water:
+        return CardElement.fire;
+    }
+  }
+
+  CardElement higherElement() {
+    switch (this) {
+      case CardElement.ground:
+        return CardElement.fire;
+      case CardElement.fire:
+        return CardElement.water;
+      case CardElement.water:
+        return CardElement.air;
+      case CardElement.air:
+        return CardElement.ground;
+    }
+  }
+
+  bool beats(CardElement otherElement) {
     //Fire beats Ground
     //Water beats Fire
     //Air beats Water
@@ -59,7 +86,7 @@ enum CardElement {
     }
   }
 
-  bool isBeatenBy(CardElement otherElement){
+  bool isBeatenBy(CardElement otherElement) {
     //Ground is beaten by Fire
     //Fire is beaten by Water
     //Water is beaten by Air
@@ -75,4 +102,4 @@ enum CardElement {
         return otherElement == CardElement.ground;
     }
   }
-  }
+}

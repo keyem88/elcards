@@ -3,16 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/controller/game_controller.dart';
 import 'package:myapp/database/firebase/firestore_database.dart';
-import 'package:myapp/models/Card/playing_card.dart';
+
 import 'package:myapp/models/User/user.dart';
 import 'package:myapp/utils/constants/app_constants.dart';
 import 'package:myapp/views/Cards/my_cards_view.dart';
-import 'package:myapp/views/Cards/show_card_view.dart';
+
 import 'package:myapp/views/Game/game_main_view.dart';
 import 'package:myapp/views/Game/join_game_view.dart';
 import 'package:myapp/views/Game/start_new_game_view.dart';
 import 'package:myapp/utils/permissions/permission_checker.dart';
-import 'package:myapp/widgets/cards/card_widget.dart';
+
+import '../widgets/cards/card_widget.dart';
 
 class MainMenuController extends GetxController {
   ElCardsUser? user;
@@ -47,10 +48,19 @@ class MainMenuController extends GetxController {
 
   void clickOnCard(BuildContext context, int index) {
     debugPrint('clickOnCard $index');
-    showModalBottomSheet(
+    showGeneralDialog(
+        context: context,
+        pageBuilder: (BuildContext context, Animation<double> animation,
+            Animation<double> secondaryAnimation) {
+          return Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: CardWidget(card: user!.cardSet.cards[index]),
+          );
+          /*showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
-        builder: (context) => CardWidget(card: user!.cardSet.cards[index]));
+        builder: (context) => );*/
+        });
   }
 
   void clickJoinGameButton() async {

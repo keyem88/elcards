@@ -9,6 +9,8 @@ enum CardLevel {
   gold(3),
   diamond(4);
 
+  static const List<double> _multiplicators = [1.0, 1.3, 2.0, 4.0];
+
   final int internalRepresentation;
 
   const CardLevel(this.internalRepresentation);
@@ -60,13 +62,26 @@ enum CardLevel {
   double get multiplicator {
     switch (this) {
       case CardLevel.bronze:
-        return 1.0;
+        return _multiplicators[0];
       case CardLevel.silver:
-        return 1.3;
+        return _multiplicators[1];
       case CardLevel.gold:
-        return 2.0;
+        return _multiplicators[2];
       case CardLevel.diamond:
-        return 4.0;
+        return _multiplicators[3];
+    }
+  }
+
+  double get lowerMultiplicator {
+    switch (this) {
+      case CardLevel.bronze:
+        return _multiplicators[0];
+      case CardLevel.silver:
+        return _multiplicators[0];
+      case CardLevel.gold:
+        return _multiplicators[1];
+      case CardLevel.diamond:
+        return _multiplicators[2];
     }
   }
 

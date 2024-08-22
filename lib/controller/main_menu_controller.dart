@@ -48,19 +48,15 @@ class MainMenuController extends GetxController {
 
   void clickOnCard(BuildContext context, int index) {
     debugPrint('clickOnCard $index');
-    showGeneralDialog(
+    showDialog(
         context: context,
-        pageBuilder: (BuildContext context, Animation<double> animation,
-            Animation<double> secondaryAnimation) {
-          return Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: CardWidget(card: user!.cardSet.cards[index]),
-          );
-          /*showModalBottomSheet(
-        backgroundColor: Colors.transparent,
-        context: context,
-        builder: (context) => );*/
-        });
+        builder: (context) => Dialog(
+          backgroundColor: Colors.transparent,
+                child: CardWidget(
+              card: user!.cardSet.cards[index],
+              width: MediaQuery.of(context).size.width * 0.4,
+              height: MediaQuery.of(context).size.height * 0.7,
+            )));
   }
 
   void clickJoinGameButton() async {

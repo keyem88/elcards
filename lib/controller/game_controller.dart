@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_nearby_connections/flutter_nearby_connections.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:myapp/models/Game/vs_game.dart';
@@ -14,6 +16,11 @@ class GameController extends GetxController {
 
   Barcode? _barcode;
   Barcode? get barcode => _barcode;
+
+  List<Device> devices = [];
+  NearbyService? nearbyService;
+  late StreamSubscription subscription;
+  late StreamSubscription receivedDataSubscription;
 
   GameController({required this.deviceType, required this.user});
 
@@ -35,8 +42,7 @@ class GameController extends GetxController {
     DateTime now = DateTime.now();
     int pin = Random().nextInt(9999);
     List<String> players = [FirebaseAuth.instance.currentUser!.uid];
-    game =
-        VSGame('1', players, setBeginner(), now, pin, isHost: true);
+    game = VSGame('1', players, setBeginner(), now, pin, isHost: true);
     return null;
   }
 

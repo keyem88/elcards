@@ -10,6 +10,7 @@ class PlayingCard {
   CardElement cardElement;
   CardLevel cardLevel;
   int cardNumber;
+  bool inCardSet = false;
   late int attack;
   late int defense;
   late int speed;

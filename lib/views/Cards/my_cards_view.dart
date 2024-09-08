@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 import '../../controller/main_menu_controller.dart';
 
 class MyCardsView extends StatelessWidget {
-  MyCardsView({super.key});
+  MyCardsView({
+    super.key,
+    required this.controller,
+    this.asOverview = true,
+  });
 
-  final controller = Get.put(
-    MainMenuController(),
-  );
+  final MainMenuController controller;
+  final bool asOverview;
 
   @override
   Widget build(BuildContext context) {
@@ -16,11 +18,16 @@ class MyCardsView extends StatelessWidget {
       'Build $runtimeType',
     );
     return ListView.builder(
+      shrinkWrap: true,
       itemCount: controller.user?.cardSet.cards.length,
       itemBuilder: (context, index) {
         return ListTile(
           onTap: () {
-            controller.clickOnCard(context, index);
+            if (asOverview) {
+              controller.clickOnCard(context, index);
+            } else {
+              controller.selectCard(index);
+            }
           },
           leading: CircleAvatar(
             backgroundColor:
@@ -33,6 +40,9 @@ class MyCardsView extends StatelessWidget {
           subtitle: Text(
             'Attack: ${controller.user?.cardSet.cards[index].attack}\nDefense: ${controller.user?.cardSet.cards[index].defense}\nSpeed: ${controller.user?.cardSet.cards[index].speed}',
           ),
+          trailing: controller.user!.cardSet.cards[index].inCardSet
+              ? const Icon(Icons.check)
+              : null,
         );
       },
     );

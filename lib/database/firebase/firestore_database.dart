@@ -69,6 +69,7 @@ class FirestoreDatabase {
           .get();
       reads++;
       debugPrint('getUser: reads: $reads, writes: $writes');
+
       return ElCardsUser.fromSnapshot(userSnapshot, cardSnapshot);
     } on FirebaseException catch (e) {
       debugPrint(e.message);

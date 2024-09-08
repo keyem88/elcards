@@ -1,18 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:myapp/controller/game_controller.dart';
 import 'package:myapp/database/firebase/firestore_database.dart';
 
 import 'package:myapp/models/User/user.dart';
-import 'package:myapp/utils/constants/app_constants.dart';
 import 'package:myapp/views/Cards/my_cards_view.dart';
+import 'package:myapp/views/Game/card_selection_view.dart';
 
 import 'package:myapp/views/Game/game_main_view.dart';
 import 'package:myapp/views/Game/join_game_view.dart';
 import 'package:myapp/views/Game/start_new_game_view.dart';
 import 'package:myapp/utils/permissions/permission_checker.dart';
 
+import '../models/Card/playing_card.dart';
 import '../widgets/cards/card_widget.dart';
 
 class MainMenuController extends GetxController {
@@ -31,9 +31,13 @@ class MainMenuController extends GetxController {
       FirebaseAuth.instance.currentUser!.uid,
     );
     pages = [
-      GameMainMenu(),
-      MyCardsView(),
-      MyCardsView(),
+      CardSelectionView(
+        controller: this,
+      ),
+      MyCardsView(
+        controller: this,
+      ),
+      MyCardsView(controller: this),
     ];
     isLoading.value = false;
     debugPrint('Is Loading: ${isLoading.value.toString()}');
@@ -51,12 +55,34 @@ class MainMenuController extends GetxController {
     showDialog(
         context: context,
         builder: (context) => Dialog(
-          backgroundColor: Colors.transparent,
-                child: CardWidget(
+            backgroundColor: Colors.transparent,
+            child: CardWidget(
               card: user!.cardSet.cards[index],
               width: MediaQuery.of(context).size.width * 0.4,
               height: MediaQuery.of(context).size.height * 0.7,
             )));
+  }
+
+  void selectCard(int index) {
+    PlayingCard? removedCard = user!.cardDeck.removeAt(4);
+    if (removedCard != null) {
+      user!.cardSet.cards[user!.cardSet.cards.indexOf(removedCard)].inCardSet =
+          false;
+    }
+    user!.cardDeck.insert(0, user!.cardSet.cards[index]);
+    user!.cardSet.cards[index].inCardSet = true;
+    debugPrint('New Card Deck: ${user!.cardDeck}');
+    update();
+  }
+
+  void removeCardFromCardDeck(int index) {
+    if (user!.cardDeck[index] != null) {
+      PlayingCard? removedCard = user!.cardDeck.removeAt(index);
+      user!.cardDeck.add(null);
+      user!.cardSet.cards[user!.cardSet.cards.indexOf(removedCard!)].inCardSet =
+          false;
+      update();
+    }
   }
 
   void clickJoinGameButton() async {
@@ -64,10 +90,7 @@ class MainMenuController extends GetxController {
     if (await PermissionChecker.checkAllPermissions()) {
       Get.to(
         () => JoinGameView(
-          controller: GameController(
-            deviceType: DeviceType.advicer,
-            user: user!,
-          ),
+          user: user!,
         ),
       );
     } else {
@@ -86,21 +109,12 @@ class MainMenuController extends GetxController {
 
   Future<void> startOwnGame() async {
     debugPrint('startOwnGame');
-    GameController gameController = GameController(
-      deviceType: DeviceType.browser,
-      user: user!,
+
+    Get.to(
+      () => StartNewGameView(
+        user: user!,
+      ),
     );
-    String? error = await gameController.createGame();
-    if (error != null) {
-      Get.snackbar('Error', error);
-      return;
-    } else {
-      Get.to(
-        () => StartNewGameView(
-          controller: gameController,
-        ),
-      );
-    }
   }
 
   @override

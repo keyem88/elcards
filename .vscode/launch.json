@@ -1,0 +1,65 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "elcards",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "elcards (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "elcards (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "AndroidEmulator",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "emulator-5554"
+        },
+        {
+            "name": "Privathandy",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "R3CT205XEZR"
+        },
+        {
+            "name": "Arbeitshandy",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "R3CTA0XXYKY"
+        },
+        {
+            "name": "ChromeBrowser",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "chrome"
+        },
+    ],
+    "compounds": [
+        {
+            "name": "AllDevices",
+            "configurations": [
+                "Privathandy",
+                "AndroidEmulator"
+            ]
+        },
+        {
+            "name": "AllPhysicalDevices",
+            "configurations": [
+                "Privathandy",
+                "Arbeitshandy"
+            ]
+        }
+    ]
+}

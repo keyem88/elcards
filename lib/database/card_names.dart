@@ -232,13 +232,13 @@ class CardNames {
   static String getName(CardElement element, int cardNumber) {
     switch (element) {
       case CardElement.air:
-        return namesAir.keys.elementAt(cardNumber);
+        return namesAir.keys.elementAt(cardNumber - 1);
       case CardElement.fire:
-        return namesFire.keys.elementAt(cardNumber);
+        return namesFire.keys.elementAt(cardNumber - 1);
       case CardElement.ground:
-        return namesGround.keys.elementAt(cardNumber);
+        return namesGround.keys.elementAt(cardNumber - 1);
       case CardElement.water:
-        return namesWater.keys.elementAt(cardNumber);
+        return namesWater.keys.elementAt(cardNumber - 1);
       default:
         return 'No Name';
     }

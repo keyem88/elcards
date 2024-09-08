@@ -1,25 +1,27 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_nearby_connections/flutter_nearby_connections.dart';
 import 'package:myapp/utils/constants/app_constants.dart';
 
 class OwnNearbyService {
-  final String userName;
+  late String userName;
   final DeviceType deviceType;
-  List<Device> devices = [];
+  List<Device> devices;
   NearbyService? nearbyService;
   late StreamSubscription subscription;
   late StreamSubscription receivedDataSubscription;
 
   OwnNearbyService({
     required this.deviceType,
-    required this.userName,
+    required this.devices,
   });
 
   Future<void> initNearbyService() async {
     nearbyService = NearbyService();
+    userName = FirebaseAuth.instance.currentUser!.uid;
     await nearbyService!.init(
         deviceName: userName,
         serviceType: 'mpconn',
@@ -65,6 +67,7 @@ class OwnNearbyService {
 
   void handleReceivedData(String data) {
     final receivedData = jsonDecode(data) as Map<String, dynamic>;
+    debugPrint('$receivedData');
   }
 
   Future<void> connectToDevice(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/config/themes/app_colors.dart';
 import 'package:myapp/utils/constants/app_constants.dart';
+import 'package:myapp/views/Other/sign_up_view.dart';
 import 'package:myapp/views/Settings/settings_view.dart';
 
 import '../controller/main_menu_controller.dart';
@@ -19,15 +20,35 @@ class MainMenuView extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.primary,
-          title: Text(AppConstants.appName),
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(AppConstants.appName),
+              Obx(() {
+                if (controller.isLoading.value) {
+                  return Text(
+                    'Loading User',
+                    style: TextStyle(fontSize: 11),
+                  );
+                } else {
+                  return Text(
+                    controller.user!.email,
+                    style: TextStyle(fontSize: 11),
+                  );
+                }
+              })
+            ],
+          ),
           actions: [
             PopupMenuButton(
               itemBuilder: (context) => [
                 PopupMenuItem(
                   child: TextButton.icon(
                     onPressed: () {
-                      FirebaseAuthentication.signOut();
-                      Get.offAllNamed(AppConstants.loginRoute);
+                      FirebaseAuthentication.signOut().then((_) {
+                        Get.deleteAll();
+                        Get.to(() => const SignUpView());
+                      });
                     },
                     icon: const Icon(Icons.logout),
                     label: const Text('Logout'),

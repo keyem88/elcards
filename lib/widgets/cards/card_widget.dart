@@ -3,7 +3,11 @@ import 'package:myapp/config/themes/app_colors.dart';
 import 'package:myapp/models/Card/playing_card.dart';
 
 class CardWidget extends StatelessWidget {
-  const CardWidget({super.key, required this.card, required this.width, required this.height});
+  const CardWidget(
+      {super.key,
+      required this.card,
+      required this.width,
+      required this.height});
   final double width;
   final double height;
 
@@ -14,7 +18,7 @@ class CardWidget extends StatelessWidget {
     return SizedBox(
       height: height,
       child: AspectRatio(
-        aspectRatio: 9/16,
+        aspectRatio: 9 / 16,
         child: Card(
           shadowColor: card.cardLevel.asColor,
           shape: RoundedRectangleBorder(
@@ -32,80 +36,76 @@ class CardWidget extends StatelessWidget {
               children: [
                 //Name der Karte
                 Padding(
-                  padding: const EdgeInsets.only(top: 24.0,),
+                  padding: const EdgeInsets.only(
+                    top: 8.0,
+                  ),
                   child: Text(
                     card.name,
                     style: const TextStyle(fontSize: 24),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-        
+
                 //Foto + Element
                 Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: Stack(
-                      children: [
-                        Align(
-                          alignment: Alignment.center,
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            width: width * 0.9,
-                            height: height * 0.5,
-                            decoration: BoxDecoration(
-                              color: card.cardLevel.asColor,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(
-                                20,
-                              ),
-                              child: SizedBox.fromSize(
-                                size: const Size.fromRadius(48),
-                                child: Image.network(
-                                    'https://picsum.photos/300/200', fit: BoxFit.cover,),
-                              ),
+                  padding: const EdgeInsets.all(8.0),
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: height * 0.4,
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: card.cardLevel.asColor,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                            20,
+                          ),
+                          child: SizedBox.fromSize(
+                            size: const Size.fromRadius(48),
+                            child: Image.network(
+                              'https://picsum.photos/400/300',
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(24.0),
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: CircleAvatar(
-                              backgroundColor: card.cardLevel.asColor,
-                              child: Icon(
-                                card.cardElement.asIcon,
-                              ),
-                            ),
+                      ),
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: CircleAvatar(
+                          backgroundColor: card.cardLevel.asColor,
+                          child: Text(
+                            '${card.valency}',
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(24.0),
-                          child: Align(
-                            alignment: Alignment.topRight,
-                            child: CircleAvatar(
-                              backgroundColor: card.cardLevel.asColor,
-                              child: Text(
-                                '${card.valency}',
-                              ),
-                            ),
+                      ),
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: CircleAvatar(
+                          backgroundColor: card.cardLevel.asColor,
+                          child: Icon(
+                            card.cardElement.asIcon,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-        
+
                 //Beschreibung
                 Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16,),
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                  ),
                   child: Text(
                     card.description,
                     textAlign: TextAlign.justify,
                   ),
                 ),
-        
+
                 //Attribute
                 Expanded(
                   child: Column(
@@ -125,7 +125,7 @@ class CardWidget extends StatelessWidget {
                           ),
                         ],
                       ),
-        
+
                       //Verteidigung
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -140,7 +140,7 @@ class CardWidget extends StatelessWidget {
                           ),
                         ],
                       ),
-        
+
                       //Geschwindigkeit
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,

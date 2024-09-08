@@ -40,7 +40,6 @@ dependencies:
   firebase_auth: ^5.1.2
   cloud_firestore: ^5.1.0
   flutter_login: ^5.0.0
-  pretty_qr_code: ^3.3.0
   geolocator: ^12.0.0
   mobile_scanner: ^5.1.1
   flutter_nearby_connections:
@@ -48,6 +47,7 @@ dependencies:
       url: https://github.com/champeauxr/flutter_nearby_connections
       ref: master
   permission_handler: ^11.3.1
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:

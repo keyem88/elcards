@@ -1,10 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:myapp/models/Card/card_set.dart';
+import 'package:myapp/models/Card/playing_card.dart';
 
 class ElCardsUser {
   final String userID;
   final String email;
   final CardSet cardSet;
+  List<PlayingCard?> cardDeck = List.generate(
+    5,
+    (index) => null,
+  );
 
   ElCardsUser(
     this.userID,

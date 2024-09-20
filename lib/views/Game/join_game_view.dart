@@ -26,15 +26,28 @@ class JoinGameView extends StatelessWidget {
     return Scaffold(
       body: Center(child: Obx(() {
         if (controller!.finishInit.value) {
-          return QrImageView(
-            data: jsonEncode({
-              'userId': controller!.user.userID,
-            }),
-            version: QrVersions.auto,
-            size: 200.0,
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const Text(
+                textAlign: TextAlign.center,
+                'Let your component scan your Game-Code',
+                style: TextStyle(
+                  fontSize: 24,
+                ),
+              ),
+              QrImageView(
+                data: jsonEncode({
+                  'userId': controller!.user.userID,
+                  'cards': jsonEncode(controller!.user.cardDeck)
+                }),
+                version: QrVersions.auto,
+                size: 200.0,
+              ),
+            ],
           );
         } else {
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         }
       })),
     );

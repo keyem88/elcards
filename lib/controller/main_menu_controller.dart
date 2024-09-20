@@ -7,7 +7,6 @@ import 'package:myapp/models/User/user.dart';
 import 'package:myapp/views/Cards/my_cards_view.dart';
 import 'package:myapp/views/Game/card_selection_view.dart';
 
-import 'package:myapp/views/Game/game_main_view.dart';
 import 'package:myapp/views/Game/join_game_view.dart';
 import 'package:myapp/views/Game/start_new_game_view.dart';
 import 'package:myapp/utils/permissions/permission_checker.dart';
@@ -20,6 +19,8 @@ class MainMenuController extends GetxController {
   var isLoading = true.obs;
   var selectedIndex = 1.obs;
   late List<Widget> pages;
+
+  Rx<bool> fiveCardsChoosen = false.obs;
 
   @override
   void onInit() async {
@@ -64,14 +65,21 @@ class MainMenuController extends GetxController {
   }
 
   void selectCard(int index) {
-    PlayingCard? removedCard = user!.cardDeck.removeAt(4);
-    if (removedCard != null) {
-      user!.cardSet.cards[user!.cardSet.cards.indexOf(removedCard)].inCardSet =
-          false;
+    if (user!.cardSet.cards[index].inCardSet) {
+      user!.cardSet.cards[index].inCardSet = false;
+      user!.cardDeck.remove(user!.cardSet.cards[index]);
+      user!.cardDeck.add(null);
+    } else {
+      PlayingCard? removedCard = user!.cardDeck.removeAt(4);
+      if (removedCard != null) {
+        user!.cardSet.cards[user!.cardSet.cards.indexOf(removedCard)]
+            .inCardSet = false;
+      }
+      user!.cardDeck.insert(0, user!.cardSet.cards[index]);
+      user!.cardSet.cards[index].inCardSet = true;
+      debugPrint('New Card Deck: ${user!.cardDeck}');
     }
-    user!.cardDeck.insert(0, user!.cardSet.cards[index]);
-    user!.cardSet.cards[index].inCardSet = true;
-    debugPrint('New Card Deck: ${user!.cardDeck}');
+    fiveCardsChoosen.value = user!.cardDeck.every((card) => card != null);
     update();
   }
 
@@ -81,11 +89,12 @@ class MainMenuController extends GetxController {
       user!.cardDeck.add(null);
       user!.cardSet.cards[user!.cardSet.cards.indexOf(removedCard!)].inCardSet =
           false;
+      fiveCardsChoosen.value = (user!.cardDeck.length == 5);
       update();
     }
   }
 
-  void clickJoinGameButton() async {
+  void clickStartOwnGameButton() async {
     debugPrint('clickJoinGameButton');
     if (await PermissionChecker.checkAllPermissions()) {
       Get.to(
@@ -98,7 +107,7 @@ class MainMenuController extends GetxController {
     }
   }
 
-  void clickStartOwnGameButton() async {
+  void clickJoinGameButton() async {
     debugPrint('clickStartOwnGameButton');
     if (await PermissionChecker.checkAllPermissions()) {
       startOwnGame();

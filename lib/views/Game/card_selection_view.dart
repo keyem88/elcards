@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/controller/main_menu_controller.dart';
+import 'package:myapp/widgets/cards/small_selection_card.dart';
 
 import '../Cards/my_cards_view.dart';
 
@@ -14,9 +15,14 @@ class CardSelectionView extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          Text(
-            'Please select your Card-Deck',
-            style: TextStyle(fontSize: 24),
+          Container(
+            width: double.infinity,
+            color: Colors.white,
+            child: const Text(
+              'Please select your Card-Deck',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 24),
+            ),
           ),
           Expanded(
             flex: 5,
@@ -28,50 +34,69 @@ class CardSelectionView extends StatelessWidget {
             ),
           ),
           Expanded(
-              flex: 1,
-              child: GetBuilder(
-                builder: (MainMenuController controller) => GridView.builder(
-                    padding: EdgeInsets.all(8),
-                    itemCount: controller.user!.cardDeck.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5,
-                    ),
-                    itemBuilder: (context, index) {
-                      if (controller.user!.cardDeck[index] == null) {
-                        return Container(
+            flex: 1,
+            child: GetBuilder(
+              builder: (MainMenuController controller) => GridView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: controller.user!.cardDeck.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 5,
+                  ),
+                  itemBuilder: (context, index) {
+                    if (controller.user!.cardDeck[index] == null) {
+                      return Padding(
+                        padding: const EdgeInsets.all(1.0),
+                        child: Container(
                           decoration: BoxDecoration(
                             border: Border.all(),
+                            color: Colors.white,
                           ),
-                        );
-                      } else {
-                        return GestureDetector(
+                        ),
+                      );
+                    } else {
+                      return Padding(
+                        padding: const EdgeInsets.all(1.0),
+                        child: GestureDetector(
                           onTap: () {
                             controller.removeCardFromCardDeck(index);
                           },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: controller
-                                  .user!.cardDeck[index]!.cardLevel.asColor,
-                              border: Border.all(),
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  '${controller.user!.cardDeck[index]?.attack}',
-                                ),
-                                Text(
-                                  '${controller.user!.cardDeck[index]?.defense}',
-                                ),
-                                Text(
-                                  '${controller.user!.cardDeck[index]?.speed}',
-                                )
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-                    }),
-              ))
+                          child: SmallSelectionCard(
+                              card: controller.user!.cardDeck[index]!),
+                        ),
+                      );
+                    }
+                  }),
+            ),
+          ),
+          Container(
+            color: Colors.white,
+            width: double.infinity,
+            child: Obx(() => Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ElevatedButton(
+                      onPressed: controller.fiveCardsChoosen.value
+                          ? () {
+                              controller.clickStartOwnGameButton();
+                            }
+                          : null,
+                      child: const Text(
+                        'Create Game!',
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: controller.fiveCardsChoosen.value
+                          ? () {
+                              controller.clickJoinGameButton();
+                            }
+                          : null,
+                      child: const Text(
+                        'Join Game!',
+                      ),
+                    ),
+                  ],
+                )),
+          )
         ],
       ),
     );

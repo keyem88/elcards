@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_nearby_connections/flutter_nearby_connections.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:myapp/models/Card/playing_card.dart';
 
 import 'package:myapp/models/Game/vs_game.dart';
+import 'package:myapp/models/User/component.dart';
 import 'package:myapp/models/User/user.dart';
 
 import 'package:myapp/utils/constants/app_constants.dart';
@@ -22,10 +24,9 @@ class GameController extends GetxController {
   late VSGame game;
   late String userName;
   final ElCardsUser user;
+  late ElCardsComponent component;
 
-  final MobileScannerController scannerController = MobileScannerController(
-    useNewCameraSelector: true,
-  );
+  late MobileScannerController scannerController;
   Barcode? _barcode;
 
   List<Device> devices = [];
@@ -44,6 +45,9 @@ class GameController extends GetxController {
   @override
   void onInit() {
     debugPrint('Init GameController');
+    scannerController = MobileScannerController(
+      useNewCameraSelector: true,
+    );
 
     PermissionChecker.checkCamera().then((value) {
       cameraPermission.value = value;
@@ -56,15 +60,27 @@ class GameController extends GetxController {
   }
 
   void handleBarcode(BarcodeCapture barcodes) {
-    _barcode = barcodes.barcodes.firstOrNull;
+    _barcode = barcodes.barcodes.firstOrNull; //Ersten gescannten Barcode
     if (devices.isNotEmpty && _barcode != null) {
-      Map<String, dynamic> data = json.decode(_barcode!.displayValue!);
+      Map<String, dynamic> data =
+          json.decode(_barcode!.displayValue!); //Daten decodieren
+      debugPrint('Barcode Data: $data');
+      //Gegner mit übertragenen Daten anlegen
+      component = ElCardsComponent.fromMap(
+        data,
+      );
+      debugPrint('${component.cardDeck}');
+      //Device mit übertragener UserId speichern
       connectedDevice =
           devices.firstWhere((device) => device.deviceName == data['userId']);
+      //Scanner Controller nach erfolgreichem Scannen schließen
       scannerController.stop();
+      //Wenn ein connectedes Device gefunden wurde
       if (connectedDevice != null) {
+        //Nearby Connection aufbauen
         connectToDevice(connectedDevice!).then((value) {
           debugPrint('Nearby Service: ${connectedDevice!.deviceId} connected');
+          //Wechsel zum Fight View
           Get.to(
             () => FightView(
               controller: this,
@@ -77,9 +93,10 @@ class GameController extends GetxController {
 
   @override
   void dispose() {
-    super.dispose();
     nearbyService = null;
-    scannerController.stop();
+    scannerController.stop().then((_) {
+      super.dispose();
+    });
   }
 
   Future<void> initNearbyService() async {

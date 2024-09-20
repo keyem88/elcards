@@ -22,6 +22,9 @@ class MyCardsView extends StatelessWidget {
       itemCount: controller.user?.cardSet.cards.length,
       itemBuilder: (context, index) {
         return ListTile(
+          tileColor: controller.user!.cardSet.cards[index].inCardSet
+              ? Colors.green.shade100
+              : null,
           onTap: () {
             if (asOverview) {
               controller.clickOnCard(context, index);

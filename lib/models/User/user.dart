@@ -17,6 +17,12 @@ class ElCardsUser {
     this.cardSet,
   );
 
+  void resetCardDeck() {
+    for (int i = 0; i < cardDeck.length; i++) {
+      cardDeck[i] = null;
+    }
+  }
+
   factory ElCardsUser.fromSnapshot(
       DocumentSnapshot userSnapshot, QuerySnapshot cardSnaphot) {
     Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;

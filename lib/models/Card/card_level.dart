@@ -31,6 +31,10 @@ enum CardLevel {
     }
   }
 
+  factory CardLevel.byInt(int value) {
+    return values[value - 1];
+  }
+
   // Returns a string representation of the card level.
   String get asString {
     switch (this) {

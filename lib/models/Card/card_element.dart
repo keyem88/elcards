@@ -17,6 +17,10 @@ enum CardElement {
     return values[random.nextInt(values.length)];
   }
 
+  factory CardElement.byInt(int value) {
+    return values[value - 1];
+  }
+
   String get asString {
     switch (this) {
       case CardElement.fire:

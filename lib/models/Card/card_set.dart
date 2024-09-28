@@ -17,6 +17,12 @@ class CardSet {
     cards.clear();
   }
 
+  void allCardsFromDeck() {
+    for (PlayingCard card in cards) {
+      card.inCardSet = false;
+    }
+  }
+
   factory CardSet.initialCards() {
     CardSet cardSet = CardSet();
     for (int i = 0; i <= 7; i++) {
@@ -39,10 +45,11 @@ class CardSet {
     };
   }
 
-  factory CardSet.fromSnapshot(QuerySnapshot snapshot){
+  factory CardSet.fromSnapshot(QuerySnapshot snapshot) {
     CardSet cardSet = CardSet();
     for (var card in snapshot.docs) {
-      cardSet.addCard(PlayingCard.fromJson(card.data() as Map<String, dynamic>));
+      cardSet
+          .addCard(PlayingCard.fromJson(card.data() as Map<String, dynamic>));
     }
     return cardSet;
   }

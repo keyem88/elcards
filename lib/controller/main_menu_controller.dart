@@ -48,6 +48,11 @@ class MainMenuController extends GetxController {
   void onItemTapped(int index) {
     debugPrint('onItemTapped $index');
     selectedIndex.value = index;
+    if (selectedIndex.value == 1) {
+      user!.resetCardDeck();
+      user!.cardSet.allCardsFromDeck();
+      fiveCardsChoosen.value = false;
+    }
     update();
   }
 
@@ -97,7 +102,7 @@ class MainMenuController extends GetxController {
   void clickStartOwnGameButton() async {
     debugPrint('clickJoinGameButton');
     if (await PermissionChecker.checkAllPermissions()) {
-      Get.to(
+      Get.offAll(
         () => JoinGameView(
           user: user!,
         ),
@@ -119,7 +124,7 @@ class MainMenuController extends GetxController {
   Future<void> startOwnGame() async {
     debugPrint('startOwnGame');
 
-    Get.to(
+    Get.offAll(
       () => StartNewGameView(
         user: user!,
       ),

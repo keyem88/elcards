@@ -31,9 +31,19 @@ class StartNewGameView extends StatelessWidget {
             child: Text('No Camera-Permission'),
           );
         }
-        return MobileScanner(
-          controller: controller!.scannerController,
-          onDetect: controller!.handleBarcode,
+        return Stack(
+          children: [
+            MobileScanner(
+              controller: controller!.scannerController,
+              onDetect: controller!.handleBarcode,
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: ElevatedButton(
+                  onPressed: controller!.clickCancelButton,
+                  child: Text('Cancel')),
+            )
+          ],
         );
       }),
     );

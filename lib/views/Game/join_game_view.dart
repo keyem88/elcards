@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:myapp/controller/game_controller.dart';
 import 'package:myapp/models/User/user.dart';
 import 'package:myapp/utils/constants/app_constants.dart';
+import 'package:myapp/views/main_menu_view.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class JoinGameView extends StatelessWidget {
@@ -36,6 +37,13 @@ class JoinGameView extends StatelessWidget {
                   fontSize: 24,
                 ),
               ),
+              Text(
+                textAlign: TextAlign.center,
+                'Own UserName: ${controller!.userName}',
+                style: TextStyle(
+                  fontSize: 24,
+                ),
+              ),
               QrImageView(
                 data: jsonEncode({
                   'userId': controller!.user.userID,
@@ -44,6 +52,9 @@ class JoinGameView extends StatelessWidget {
                 version: QrVersions.auto,
                 size: 200.0,
               ),
+              ElevatedButton(
+                  onPressed: controller!.clickCancelButton,
+                  child: Text('Cancel'))
             ],
           );
         } else {

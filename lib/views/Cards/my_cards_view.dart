@@ -39,10 +39,46 @@ class MyCardsView extends StatelessWidget {
               controller.user?.cardSet.cards[index].cardElement.asIcon,
             ),
           ),
-          title: Text(controller.user?.cardSet.cards[index].name ?? ""),
-          subtitle: Text(
-            'Attack: ${controller.user?.cardSet.cards[index].attack}\nDefense: ${controller.user?.cardSet.cards[index].defense}\nSpeed: ${controller.user?.cardSet.cards[index].speed}',
+          title: Text(
+            controller.user?.cardSet.cards[index].name ?? "",
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
+          subtitle: Row(
+            children: [
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Attack: ',
+                  ),
+                  Text(
+                    'Defense: ',
+                  ),
+                  Text(
+                    'Speed: ',
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  Text(
+                    '${controller.user?.cardSet.cards[index].attack}',
+                  ),
+                  Text(
+                    '${controller.user?.cardSet.cards[index].defense}',
+                  ),
+                  Text(
+                    '${controller.user?.cardSet.cards[index].speed}',
+                  ),
+                ],
+              ),
+            ],
+          )
+          /* Text(
+            'Attack: ${controller.user?.cardSet.cards[index].attack}\nDefense: ${controller.user?.cardSet.cards[index].defense}\nSpeed: ${controller.user?.cardSet.cards[index].speed}',
+          ) */
+          ,
           trailing: controller.user!.cardSet.cards[index].inCardSet
               ? const Icon(Icons.check)
               : null,

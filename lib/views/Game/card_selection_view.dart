@@ -12,6 +12,7 @@ class CardSelectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    controller.fiveCardsChoosen.value = false;
     return Scaffold(
       body: Column(
         children: [

@@ -40,21 +40,22 @@ class JoinGameView extends StatelessWidget {
               Text(
                 textAlign: TextAlign.center,
                 'Own UserName: ${controller!.userName}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 24,
                 ),
               ),
               QrImageView(
                 data: jsonEncode({
                   'userId': controller!.user.userID,
-                  'cards': jsonEncode(controller!.user.cardDeck)
+                  'cards': jsonEncode(controller!.user.cardDeck),
+                  'firstTurn': jsonEncode(!controller!.game.ownTurn),
                 }),
                 version: QrVersions.auto,
                 size: 200.0,
               ),
               ElevatedButton(
                   onPressed: controller!.clickCancelButton,
-                  child: Text('Cancel'))
+                  child: const Text('Cancel'))
             ],
           );
         } else {

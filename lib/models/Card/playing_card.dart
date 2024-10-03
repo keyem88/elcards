@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:get/get.dart';
 import 'package:myapp/models/Card/card_attributes.dart';
 import 'package:myapp/models/Card/card_element.dart';
 import 'package:myapp/models/Card/card_level.dart';
@@ -11,6 +12,7 @@ class PlayingCard {
   CardLevel cardLevel;
   int cardNumber;
   bool inCardSet = false;
+  Rx<bool> selectedForTurn = false.obs;
   late int attack;
   late int defense;
   late int speed;
@@ -45,6 +47,21 @@ class PlayingCard {
 
   int get valency {
     return attack + defense + speed;
+  }
+
+  int lowerAttack() {
+    return CardAttribute.attributes[cardNumber - 1]['attack']! *
+        cardLevel.lowerMultiplicator.ceil();
+  }
+
+  int lowerDefense() {
+    return CardAttribute.attributes[cardNumber - 1]['defense']! *
+        cardLevel.lowerMultiplicator.ceil();
+  }
+
+  int lowerSpeed() {
+    return CardAttribute.attributes[cardNumber - 1]['speed']! *
+        cardLevel.lowerMultiplicator.ceil();
   }
 
   factory PlayingCard.random([Random? random]) {

@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'dart:math';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_nearby_connections/flutter_nearby_connections.dart';
@@ -59,8 +57,12 @@ class GameController extends GetxController {
 
     initNearbyService().then((_) {
       finishInit.value = true;
+
       super.onInit();
     });
+    if (deviceType == DeviceType.advicer) {
+      game = VSGame(user);
+    }
   }
 
   void handleBarcode(BarcodeCapture barcodes) async {
@@ -79,6 +81,8 @@ class GameController extends GetxController {
           devices.firstWhere((device) => device.deviceName == data['userId']);
       //Scanner Controller nach erfolgreichem Scannen schließen
       scannerController.stop();
+      //Spiel erstellen
+      game = VSGame.joinGame(user, oponent!, jsonDecode(data['firstTurn']));
       //Wenn ein connectedes Device gefunden wurde
       if (connectedDevice != null) {
         //Nearby Connection aufbauen
@@ -243,22 +247,24 @@ class GameController extends GetxController {
     await nearbyService!.stopBrowsingForPeers();
   }
 
-  int setBeginner() {
-    return Random().nextInt(2);
-  }
-
-  Future<String?> createGame() async {
-    DateTime now = DateTime.now();
-    int pin = Random().nextInt(9999);
-    List<String> players = [FirebaseAuth.instance.currentUser!.uid];
-    game = VSGame('1', players, setBeginner(), now, pin, isHost: true);
-    return null;
-  }
-
   void clickCancelButton() {
     user.resetCardDeck();
     user.cardSet.allCardsFromDeck();
     connectedDevice = null;
     Get.offAll(() => MainMenuView());
+  }
+
+  void clickCardInTurn(int index) {
+    if (user.cardDeck[index]!.selectedForTurn.value == true) {
+      user.cardDeck[index]!.selectedForTurn.value = false;
+      return;
+    }
+    if (user.cardDeck
+        .any((element) => element!.selectedForTurn.value == true)) {
+      user.deselectAllCardsForTurn();
+    }
+    user.cardDeck[index]!.selectedForTurn.value = true;
+    debugPrint(
+        'GameController - Click Card with Index $index is selected in turn: ${user.cardDeck[index]!.selectedForTurn}');
   }
 }

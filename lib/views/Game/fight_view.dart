@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/controller/game_controller.dart';
 import 'package:myapp/views/main_menu_view.dart';
-import 'package:myapp/widgets/cards/small_selection_card.dart';
+import 'package:myapp/widgets/cards/card_widget.dart';
 
 class FightView extends StatelessWidget {
   const FightView({
@@ -17,19 +17,54 @@ class FightView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('1 vs 1 Fight'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              controller.sendData({
+                'connected': controller.userName,
+                'cards': jsonEncode(controller.user.cardDeck),
+              }, controller.connectedDevice!.deviceId);
+            },
+            icon: const Icon(
+              Icons.abc,
+            ),
+          ),
+        ],
+      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Center(
             child: Text(
-                'Connected Device: ${controller.connectedDevice!.deviceName}'),
-          ),
-          Center(
-            child: Text(
-              'Own Device id: ${controller.userName}',
+              (controller.game.ownTurn
+                  ? 'Du bist an der Reihe. Wähle deine Karte und deinen Zug!'
+                  : 'Der Gegner ist an der Reihe. Welche Karte möchtest du einsetzen?'),
+              style: const TextStyle(
+                fontSize: 24,
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
-          GridView.builder(
+          Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemBuilder: (context, index) => GestureDetector(
+                onTap: () {
+                  controller.clickCardInTurn(index);
+                },
+                child: CardWidget(
+                    card: controller.user.cardDeck[index]!,
+                    width: 100,
+                    height: 500),
+              ),
+              itemCount: 5,
+              scrollDirection: Axis.horizontal,
+            ),
+          ),
+          /* GridView.builder(
+              addRepaintBoundaries: false,
               itemCount: 5,
               shrinkWrap: true,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -40,40 +75,7 @@ class FightView extends StatelessWidget {
                   child: SmallSelectionCard(
                       card: controller.user.cardDeck[index]!),
                 );
-              }),
-          GridView.builder(
-              itemCount: 5,
-              shrinkWrap: true,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 5),
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.all(1.0),
-                  child: SmallSelectionCard(
-                      card: controller.oponent!.cardDeck[index]!),
-                );
-              }),
-          ElevatedButton(
-            onPressed: () {
-              controller.sendData({
-                'connected': controller.userName,
-                'cards': jsonEncode(controller.user.cardDeck),
-              }, controller.connectedDevice!.deviceId);
-            },
-            child: const Text(
-              'send',
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              controller.sendData({
-                'message': 'Hello i am ${controller.userName}',
-              }, controller.connectedDevice!.deviceId);
-            },
-            child: const Text(
-              'send',
-            ),
-          ),
+              }), */
           ElevatedButton(
             onPressed: () {
               controller.disconnectDevice(controller.connectedDevice!.deviceId);

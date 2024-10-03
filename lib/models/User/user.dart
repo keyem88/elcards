@@ -23,6 +23,12 @@ class ElCardsUser {
     }
   }
 
+  void deselectAllCardsForTurn() {
+    for (int i = 0; i < cardDeck.length; i++) {
+      cardDeck[i]!.selectedForTurn.value = false;
+    }
+  }
+
   factory ElCardsUser.fromSnapshot(
       DocumentSnapshot userSnapshot, QuerySnapshot cardSnaphot) {
     Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;

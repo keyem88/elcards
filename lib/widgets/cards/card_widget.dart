@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/config/themes/app_colors.dart';
+import 'package:myapp/controller/game_controller.dart';
 import 'package:myapp/models/Card/playing_card.dart';
 
 class CardWidget extends StatelessWidget {
@@ -8,11 +9,14 @@ class CardWidget extends StatelessWidget {
       {super.key,
       required this.card,
       required this.width,
-      required this.height});
+      required this.height,
+      this.controller});
   final double width;
   final double height;
 
   final PlayingCard card;
+
+  final GameController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -40,61 +44,62 @@ class CardWidget extends StatelessWidget {
                 children: [
                   //Name der Karte
                   Padding(
-                    padding: const EdgeInsets.only(
-                      top: 8.0,
-                    ),
-                    child: Text(
-                      card.name,
-                      style: const TextStyle(fontSize: 24),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
+                      padding: const EdgeInsets.only(
+                        top: 8.0,
+                      ),
+                      child: Text(
+                        card.name,
+                        style: const TextStyle(fontSize: 24),
+                        textAlign: TextAlign.center,
+                      )),
 
                   //Foto + Element
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          height: height * 0.4,
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: card.cardLevel.asColor,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(
-                              20,
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            height: height * 0.4,
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: card.cardLevel.asColor,
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                            child: SizedBox.fromSize(
-                              size: const Size.fromRadius(48),
-                              child: Image.network(
-                                'https://picsum.photos/400/300',
-                                fit: BoxFit.cover,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(
+                                20,
+                              ),
+                              child: SizedBox.fromSize(
+                                size: const Size.fromRadius(48),
+                                child: Image.network(
+                                  'https://picsum.photos/400/300',
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: CircleAvatar(
-                            backgroundColor: card.cardLevel.asColor,
-                            child: Text(
-                              '${card.valency}',
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: CircleAvatar(
+                              backgroundColor: card.cardLevel.asColor,
+                              child: Text(
+                                '${card.valency}',
+                              ),
                             ),
                           ),
-                        ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: CircleAvatar(
-                            backgroundColor: card.cardLevel.asColor,
-                            child: Icon(
-                              card.cardElement.asIcon,
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: CircleAvatar(
+                              backgroundColor: card.cardLevel.asColor,
+                              child: Icon(
+                                card.cardElement.asIcon,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
 
@@ -119,15 +124,9 @@ class CardWidget extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Obx(
-                              () => card.selectedForTurn.value
-                                  ? ElevatedButton(
-                                      onPressed: () {},
-                                      child: const Text('Attack'))
-                                  : const Text(
-                                      'Attack',
-                                      style: TextStyle(fontSize: 24),
-                                    ),
+                            const Text(
+                              'Attack',
+                              style: TextStyle(fontSize: 24),
                             ),
                             Text(
                               '${card.attack}',
@@ -140,15 +139,9 @@ class CardWidget extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Obx(
-                              () => card.selectedForTurn.value
-                                  ? ElevatedButton(
-                                      onPressed: () {},
-                                      child: const Text('Defend'))
-                                  : const Text(
-                                      'Defense',
-                                      style: TextStyle(fontSize: 24),
-                                    ),
+                            const Text(
+                              'Defense',
+                              style: TextStyle(fontSize: 24),
                             ),
                             Text(
                               '${card.defense}',
@@ -161,19 +154,16 @@ class CardWidget extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Obx(
-                              () => card.selectedForTurn.value
-                                  ? ElevatedButton(
-                                      onPressed: () {},
-                                      child: const Text('Escape'))
-                                  : const Text(
-                                      'Speed',
-                                      style: TextStyle(fontSize: 24),
-                                    ),
+                            const Text(
+                              'Speed',
+                              style: TextStyle(fontSize: 24),
                             ),
-                            Text(
-                              '${card.speed}',
-                              style: const TextStyle(fontSize: 24),
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                '${card.speed}',
+                                style: const TextStyle(fontSize: 24),
+                              ),
                             ),
                           ],
                         )

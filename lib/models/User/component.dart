@@ -8,6 +8,7 @@ import 'package:myapp/models/Card/playing_card.dart';
 class ElCardsOponent {
   final String userID;
   final List<PlayingCard?> cardDeck;
+  bool finishedTurn = false;
 
   ElCardsOponent(this.userID, this.cardDeck);
 

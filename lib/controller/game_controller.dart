@@ -65,6 +65,25 @@ class GameController extends GetxController {
     }
   }
 
+  @override
+  void onClose() {
+    if (connectedDevice != null) {
+      nearbyService!.disconnectPeer(deviceID: connectedDevice!.deviceId);
+    }
+
+    nearbyService = null;
+    scannerController.stop().then((_) {
+      super.onClose();
+    });
+    user.resetCardDeck();
+    user.cardSet.allCardsFromDeck();
+    MainMenuController().selectedIndex.value = 1;
+  }
+
+  /*
+  BARCODE
+  */
+
   void handleBarcode(BarcodeCapture barcodes) async {
     _barcode = barcodes.barcodes.firstOrNull; //Ersten gescannten Barcode
     if (devices.isNotEmpty && _barcode != null) {
@@ -97,20 +116,9 @@ class GameController extends GetxController {
     }
   }
 
-  @override
-  void onClose() {
-    if (connectedDevice != null) {
-      nearbyService!.disconnectPeer(deviceID: connectedDevice!.deviceId);
-    }
-
-    nearbyService = null;
-    scannerController.stop().then((_) {
-      super.onClose();
-    });
-    user.resetCardDeck();
-    user.cardSet.allCardsFromDeck();
-    MainMenuController().selectedIndex.value = 1;
-  }
+  /*
+  NEARBY-Service
+  */
 
   Future<void> initNearbyService() async {
     nearbyService = NearbyService();
@@ -160,6 +168,60 @@ class GameController extends GetxController {
         });
   }
 
+  Future<void> connectToDevice(Device device) async {
+    debugPrint('connectToDevice beginning to connect');
+    var result = await nearbyService!.invitePeer(
+      deviceID: device.deviceId,
+      deviceName: device.deviceName,
+    );
+    debugPrint('connectToDevice $result');
+    debugPrint('connectToDevice sendData');
+    await Future.delayed(const Duration(seconds: 2));
+    debugPrint(
+        'Send data: Connected $userName to ${connectedDevice!.deviceId}');
+    sendData(
+      {
+        'connected': userName,
+        'cards': jsonEncode(user.cardDeck),
+      },
+      connectedDevice!.deviceId,
+    );
+    debugPrint('connectToDevice Data send');
+    await nearbyService!.stopAdvertisingPeer();
+    debugPrint('connectToDevice stopAdvertisingPeer');
+    await nearbyService!.stopBrowsingForPeers();
+    debugPrint('connectToDevice stopBrowsingForPeers');
+  }
+
+  Future<void> disconnectDevice(String deviceID, {bool first = true}) async {
+    if (first) {
+      sendData(
+        {
+          'disconnected': userName,
+        },
+        connectedDevice!.deviceId,
+      );
+    }
+    oponent = null;
+    user.resetCardDeck();
+    user.cardSet.allCardsFromDeck();
+    connectedDevice = null;
+    await nearbyService!.disconnectPeer(deviceID: deviceID);
+    await nearbyService!.stopAdvertisingPeer();
+    await nearbyService!.stopBrowsingForPeers();
+  }
+
+  /*
+  NEARY-Service Data
+  */
+
+  void sendData(Map<String, dynamic> data, String deviceID) {
+    nearbyService!.sendMessage(
+      deviceID,
+      jsonEncode(data),
+    );
+  }
+
   Future<void> handleReceivedData(dynamic data) async {
     debugPrint('handleReceivedData data: $data');
     String stringData = data['message'] as String;
@@ -195,58 +257,54 @@ class GameController extends GetxController {
         message: '$data',
       ));
     }
+    if (receivedData.containsKey('action')) {
+      oponent!.finishedTurn = true;
+      Get.showSnackbar(GetSnackBar(
+        message: '$data',
+      ));
+      if (user.finishTurn) {
+        Get.close(1);
+      }
+    }
+    if (receivedData.containsKey('defender')) {
+      oponent!.finishedTurn = true;
+      Get.showSnackbar(GetSnackBar(
+        message: '$data',
+      ));
+      if (user.finishTurn) {
+        Get.close(1);
+      }
+    }
   }
 
-  Future<void> connectToDevice(Device device) async {
-    debugPrint('connectToDevice beginning to connect');
-    var result = await nearbyService!.invitePeer(
-      deviceID: device.deviceId,
-      deviceName: device.deviceName,
-    );
-    debugPrint('connectToDevice $result');
-    debugPrint('connectToDevice sendData');
-    await Future.delayed(const Duration(seconds: 2));
-    debugPrint(
-        'Send data: Connected $userName to ${connectedDevice!.deviceId}');
+  void sendDataAsAttacker(int cardIndex, ActionType action) {
+    user.finishTurn = true;
     sendData(
       {
-        'connected': userName,
-        'cards': jsonEncode(user.cardDeck),
+        'action': action.index,
+        'cardIndex': cardIndex,
       },
       connectedDevice!.deviceId,
     );
-    debugPrint('connectToDevice Data send');
-    await nearbyService!.stopAdvertisingPeer();
-    debugPrint('connectToDevice stopAdvertisingPeer');
-    await nearbyService!.stopBrowsingForPeers();
-    debugPrint('connectToDevice stopBrowsingForPeers');
   }
 
-  void sendData(Map<String, dynamic> data, String deviceID) {
-    nearbyService!.sendMessage(
-      deviceID,
-      jsonEncode(data),
+  void sendDataAsDefender(
+    int cardIndex,
+  ) {
+    user.finishTurn = true;
+    sendData(
+      {
+        'defender': cardIndex,
+      },
+      connectedDevice!.deviceId,
     );
   }
 
-  Future<void> disconnectDevice(String deviceID, {bool first = true}) async {
-    if (first) {
-      sendData(
-        {
-          'disconnected': userName,
-        },
-        connectedDevice!.deviceId,
-      );
-    }
-    oponent = null;
-    user.resetCardDeck();
-    user.cardSet.allCardsFromDeck();
-    connectedDevice = null;
-    await nearbyService!.disconnectPeer(deviceID: deviceID);
-    await nearbyService!.stopAdvertisingPeer();
-    await nearbyService!.stopBrowsingForPeers();
-  }
+  /*
+  Handle Buttons
+  */
 
+  //Click Cancel Button
   void clickCancelButton() {
     user.resetCardDeck();
     user.cardSet.allCardsFromDeck();
@@ -254,7 +312,8 @@ class GameController extends GetxController {
     Get.offAll(() => MainMenuView());
   }
 
-  void clickCardInTurn(int index) {
+  //If Card is clicked in the Turn
+  void clickCardInTurn(int index, BuildContext context) async {
     if (user.cardDeck[index]!.selectedForTurn.value == true) {
       user.cardDeck[index]!.selectedForTurn.value = false;
       return;
@@ -264,7 +323,103 @@ class GameController extends GetxController {
       user.deselectAllCardsForTurn();
     }
     user.cardDeck[index]!.selectedForTurn.value = true;
+    if (game.ownTurn) {
+      var result = await Get.dialog(
+        showGameActionDialog(index),
+      );
+
+      if (result == null) {
+        user.deselectAllCardsForTurn();
+      }
+    } else {
+      var result = await Get.dialog(
+        showDefenderDialog(index),
+      );
+      if (result == null) {
+        user.deselectAllCardsForTurn();
+      }
+    }
+
     debugPrint(
         'GameController - Click Card with Index $index is selected in turn: ${user.cardDeck[index]!.selectedForTurn}');
+  }
+
+  //Dialog after choose a Card as Defender
+  Widget showDefenderDialog(int cardIndex) {
+    return AlertDialog(
+      title: const Text("Confirm Card-Selection"),
+      titleTextStyle: const TextStyle(
+          fontWeight: FontWeight.bold, color: Colors.black, fontSize: 20),
+      actionsOverflowButtonSpacing: 20,
+      actions: [
+        ElevatedButton(
+            onPressed: () {
+              Get.close(1);
+            },
+            child: const Text("No")),
+        ElevatedButton(
+            onPressed: () {
+              sendDataAsDefender(cardIndex);
+              Get.close(1);
+              if (oponent!.finishedTurn == false) {
+                Get.dialog(showWaitingOfOponentDialog());
+              }
+            },
+            child: const Text("Yes")),
+      ],
+      content: const Text("Do you want to use the card against your opponent?"),
+    );
+  }
+
+  //Dialog after choose a Card as Attacker
+  Widget showGameActionDialog(int cardIndex) {
+    return AlertDialog(
+      title: const Text("Please select"),
+      titleTextStyle: const TextStyle(
+          fontWeight: FontWeight.bold, color: Colors.black, fontSize: 20),
+      actionsOverflowButtonSpacing: 10,
+      actionsOverflowAlignment: OverflowBarAlignment.center,
+      actions: [
+        ElevatedButton(
+            onPressed: () {
+              sendDataAsAttacker(cardIndex, ActionType.attack);
+              Get.close(1);
+              if (oponent!.finishedTurn == false) {
+                Get.dialog(showWaitingOfOponentDialog());
+              }
+            },
+            child: const Text("Attack")),
+        ElevatedButton(
+            onPressed: () {
+              sendDataAsAttacker(cardIndex, ActionType.defend);
+              Get.close(1);
+              if (oponent!.finishedTurn == false) {
+                Get.dialog(showWaitingOfOponentDialog());
+              }
+            },
+            child: const Text("Defend")),
+        ElevatedButton(
+            onPressed: () {
+              sendDataAsAttacker(cardIndex, ActionType.escape);
+              Get.close(1);
+              if (oponent!.finishedTurn == false) {
+                Get.dialog(showWaitingOfOponentDialog());
+              }
+            },
+            child: const Text("Escape")),
+      ],
+      content: const Text("Which move do you want to use?"),
+    );
+  }
+
+  Widget showWaitingOfOponentDialog() {
+    return const AlertDialog(
+      title: Text("Waiting..."),
+      content: Text("...for oponents move."),
+    );
+  }
+
+  void showTurnResult() {
+    //Get.dialog(widget);
   }
 }

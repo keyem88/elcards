@@ -52,7 +52,7 @@ class FightView extends StatelessWidget {
               shrinkWrap: true,
               itemBuilder: (context, index) => GestureDetector(
                 onTap: () {
-                  controller.clickCardInTurn(index);
+                  controller.clickCardInTurn(index, context);
                 },
                 child: CardWidget(
                     card: controller.user.cardDeck[index]!,

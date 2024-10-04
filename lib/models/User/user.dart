@@ -6,6 +6,7 @@ class ElCardsUser {
   final String userID;
   final String email;
   final CardSet cardSet;
+  bool finishTurn = false;
   List<PlayingCard?> cardDeck = List.generate(
     5,
     (index) => null,

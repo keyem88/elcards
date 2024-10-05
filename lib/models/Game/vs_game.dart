@@ -14,6 +14,11 @@ class VSGame {
   int turn = 0;
   int ownPoints = 0;
   int oponentPoints = 0;
+  Map<String, dynamic> turnData = {
+    'ownCardIndex': null,
+    'oponentCardIndex': null,
+    'gameAction': null
+  };
 
   VSGame(
     this.ownUser,
@@ -31,6 +36,30 @@ class VSGame {
     game.ownTurn = ownTurn;
     debugPrint('VSGame - Spiel beigetreten');
     return game;
+  }
+
+  void setOwnCardIndex(int index) {
+    turnData['ownCardIndex'] = index;
+  }
+
+  void setOponentCardIndex(int index) {
+    turnData['oponentCardIndex'] = index;
+  }
+
+  void setGameAction(int index) {
+    turnData['gameAction'] = ActionType.values[index];
+  }
+
+  int? getOwnCardIndex() {
+    return turnData['ownCardIndex'];
+  }
+
+  int? getOponentCardIndex() {
+    return turnData['oponentCardIndex'];
+  }
+
+  ActionType? getActionType() {
+    return turnData['gameAction'];
   }
 
   void nextTurn() {

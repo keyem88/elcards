@@ -202,11 +202,16 @@ class GameController extends GetxController {
         connectedDevice!.deviceId,
       );
     }
+    await resetAllData();
+    await nearbyService!.disconnectPeer(deviceID: deviceID);
+  }
+
+  Future<void> resetAllData() async {
     oponent = null;
     user.resetCardDeck();
     user.cardSet.allCardsFromDeck();
     connectedDevice = null;
-    await nearbyService!.disconnectPeer(deviceID: deviceID);
+
     await nearbyService!.stopAdvertisingPeer();
     await nearbyService!.stopBrowsingForPeers();
   }
@@ -228,21 +233,29 @@ class GameController extends GetxController {
     Map<String, dynamic> receivedData = jsonDecode(stringData);
     debugPrint('Nearby Service received Data: $receivedData');
     if (receivedData.containsKey('cards')) {
-      connectedDevice = devices.firstWhere(
-        (Device device) => device.deviceId == data['deviceId'],
-      );
-      List<PlayingCard?> cardDeck = [];
-      for (var element in jsonDecode(receivedData['cards'])) {
-        cardDeck.add(
-          PlayingCard(
-            CardElement.byInt(element['element']),
-            CardLevel.byInt(element['level']),
-            element['level'],
-          ),
+      try {
+        debugPrint('handleReceivedData - devices: $devices');
+        connectedDevice = devices.firstWhere(
+          (Device device) => device.deviceId == data['deviceId'],
         );
+        List<PlayingCard?> cardDeck = [];
+        for (var element in jsonDecode(receivedData['cards'])) {
+          cardDeck.add(
+            PlayingCard(
+              CardElement.byInt(element['element']),
+              CardLevel.byInt(element['level']),
+              element['level'],
+            ),
+          );
+        }
+        oponent = ElCardsOponent(receivedData['connected'], cardDeck);
+        debugPrint('handleReceivedData - create oponent $oponent');
+        Get.to(() => FightView(controller: this));
+      } catch (e) {
+        Get.snackbar('Error', 'Device not found');
+        await resetAllData();
+        Get.offAll(() => MainMenuView());
       }
-      oponent = ElCardsOponent(receivedData['connected'], cardDeck);
-      Get.to(() => FightView(controller: this));
     }
     if (receivedData.containsKey('disconnected')) {
       disconnectDevice(
@@ -258,21 +271,37 @@ class GameController extends GetxController {
       ));
     }
     if (receivedData.containsKey('action')) {
-      oponent!.finishedTurn = true;
+      //Spieler agiert als Verteidiger
+      //Gegner sendet Index der Karte und seinen gewählten ActionType
+      oponent!.finishedTurn = true; //Daten vom Angreifer gehen ein
       Get.showSnackbar(GetSnackBar(
         message: '$data',
       ));
+      game.setOponentCardIndex(receivedData['cardIndex']);
+      game.setGameAction(receivedData['action']);
       if (user.finishTurn) {
-        Get.close(1);
+        //Spieler hat Daten bereits abgeschickt und wartet
+        Get.close(1); //"Warten auf Gegner" - Meldung ausblenden
+        calculateTurnResult();
+      } else {
+        //Spieler hat Daten noch nicht abgeschickt
+        //TODO: Rundenergebnis nach Absenden berechnen
       }
     }
     if (receivedData.containsKey('defender')) {
+      //Spieler agiert als Angreifer
+      //Gegner sendet Index seiner der Karte
       oponent!.finishedTurn = true;
-      Get.showSnackbar(GetSnackBar(
-        message: '$data',
-      ));
+      //Eingegangene Gegnerdaten speichern
+      game.setOponentCardIndex(receivedData['defender']);
       if (user.finishTurn) {
-        Get.close(1);
+        //Spieler hat Daten bereits abgeschickt und wartet
+        Get.close(1); //"Warten auf Gegner" - Meldung ausblenden
+        calculateTurnResult();
+        //TODO: Rundenergebnis berechnen
+      } else {
+        //Spieler hat Daten noch nicht abgeschickt
+        //TODO: Rundenergebnis nach Absenden berechnen
       }
     }
   }
@@ -297,6 +326,22 @@ class GameController extends GetxController {
         'defender': cardIndex,
       },
       connectedDevice!.deviceId,
+    );
+  }
+
+  /*
+  Calculate
+  Turn - Result
+  */
+
+  void calculateTurnResult() {
+    TurnResult turnresult = game.calculateTurn(game.getOwnCardIndex()!,
+        game.getOponentCardIndex()!, game.getActionType()!);
+    Get.dialog(
+      SimpleDialog(
+        title: Text('Turnresult'),
+        children: [Text('$turnresult')],
+      ),
     );
   }
 
@@ -360,9 +405,16 @@ class GameController extends GetxController {
         ElevatedButton(
             onPressed: () {
               sendDataAsDefender(cardIndex);
+              game.setOwnCardIndex(cardIndex);
               Get.close(1);
               if (oponent!.finishedTurn == false) {
+                //Gegner hat noch keine Daten gesendet
+                //Berechnung Rundenergebnis erst bei Eingang der Daten
                 Get.dialog(showWaitingOfOponentDialog());
+              } else {
+                //Gegnerdaten liegen bereits vor
+                //Rundenergebnis kann berechnet werden
+                calculateTurnResult();
               }
             },
             child: const Text("Yes")),
@@ -383,27 +435,51 @@ class GameController extends GetxController {
         ElevatedButton(
             onPressed: () {
               sendDataAsAttacker(cardIndex, ActionType.attack);
+              game.setOwnCardIndex(cardIndex);
+              game.setGameAction(ActionType.attack.index);
               Get.close(1);
               if (oponent!.finishedTurn == false) {
+                //Gegner hat noch keine Daten gesendet
+                //Berechnung Rundenergebnis erst bei Eingang der Daten
                 Get.dialog(showWaitingOfOponentDialog());
+              } else {
+                //Gegnerdaten liegen bereits vor
+                //Rundenergebnis kann berechnet werden
+                calculateTurnResult();
               }
             },
             child: const Text("Attack")),
         ElevatedButton(
             onPressed: () {
               sendDataAsAttacker(cardIndex, ActionType.defend);
+              game.setOwnCardIndex(cardIndex);
+              game.setGameAction(ActionType.defend.index);
               Get.close(1);
               if (oponent!.finishedTurn == false) {
+                //Gegner hat noch keine Daten gesendet
+                //Berechnung Rundenergebnis erst bei Eingang der Daten
                 Get.dialog(showWaitingOfOponentDialog());
+              } else {
+                //Gegnerdaten liegen bereits vor
+                //Rundenergebnis kann berechnet werden
+                calculateTurnResult();
               }
             },
             child: const Text("Defend")),
         ElevatedButton(
             onPressed: () {
               sendDataAsAttacker(cardIndex, ActionType.escape);
+              game.setOwnCardIndex(cardIndex);
+              game.setGameAction(ActionType.escape.index);
               Get.close(1);
               if (oponent!.finishedTurn == false) {
+                //Gegner hat noch keine Daten gesendet
+                //Berechnung Rundenergebnis erst bei Eingang der Daten
                 Get.dialog(showWaitingOfOponentDialog());
+              } else {
+                //Gegnerdaten liegen bereits vor
+                //Rundenergebnis kann berechnet werden
+                calculateTurnResult();
               }
             },
             child: const Text("Escape")),

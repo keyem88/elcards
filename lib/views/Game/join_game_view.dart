@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:myapp/controller/game_controller.dart';
 import 'package:myapp/models/User/user.dart';
 import 'package:myapp/utils/constants/app_constants.dart';
-import 'package:myapp/views/main_menu_view.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class JoinGameView extends StatelessWidget {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_nearby_connections/flutter_nearby_connections.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 

@@ -7,8 +7,8 @@ import 'package:myapp/models/User/user.dart';
 import 'package:myapp/views/Cards/my_cards_view.dart';
 import 'package:myapp/views/Game/card_selection_view.dart';
 
-import 'package:myapp/views/Game/join_game_view.dart';
-import 'package:myapp/views/Game/start_new_game_view.dart';
+import 'package:myapp/views/Game/show_qr_code_view.dart';
+import 'package:myapp/views/Game/scan_qr_code_view.dart';
 import 'package:myapp/utils/permissions/permission_checker.dart';
 
 import '../models/Card/playing_card.dart';
@@ -58,15 +58,24 @@ class MainMenuController extends GetxController {
 
   void clickOnCard(BuildContext context, int index) {
     debugPrint('clickOnCard $index');
-    showDialog(
-        context: context,
-        builder: (context) => Dialog(
-            backgroundColor: Colors.transparent,
-            child: CardWidget(
-              card: user!.cardSet.cards[index],
-              width: MediaQuery.of(context).size.width * 0.4,
-              height: MediaQuery.of(context).size.height * 0.7,
-            )));
+    showGeneralDialog(
+      context: context,
+      barrierColor: Colors.transparent, // Background color
+      barrierDismissible: false,
+      barrierLabel: 'Dialog',
+      transitionDuration: Duration(milliseconds: 400),
+      pageBuilder: (context, __, ___) {
+        return Scaffold(
+          body: SafeArea(
+            child: Center(
+              child: CardWidget(
+                card: user!.cardSet.cards[index],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void selectCard(int index) {
@@ -103,7 +112,7 @@ class MainMenuController extends GetxController {
     debugPrint('clickJoinGameButton');
     if (await PermissionChecker.checkAllPermissions()) {
       Get.offAll(
-        () => JoinGameView(
+        () => ShowQRCodeView(
           user: user!,
         ),
       );
@@ -125,7 +134,7 @@ class MainMenuController extends GetxController {
     debugPrint('startOwnGame');
 
     Get.offAll(
-      () => StartNewGameView(
+      () => ScanQRCodeView(
         user: user!,
       ),
     );

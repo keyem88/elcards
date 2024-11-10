@@ -1,6 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:myapp/models/Card/card_element.dart';
+import 'package:myapp/models/Card/playing_card.dart';
 import 'package:myapp/models/User/component.dart';
 import 'package:myapp/models/User/user.dart';
 import 'package:myapp/utils/constants/app_constants.dart';
@@ -9,11 +12,12 @@ class VSGame {
   late String id;
   final ElCardsUser ownUser;
   late ElCardsOponent oponent;
-  late bool ownTurn;
+  var ownTurn = false.obs;
   bool active = true;
   int turn = 0;
-  int ownPoints = 0;
-  int oponentPoints = 0;
+  var ownPoints = 0.obs;
+  var oponentPoints = 0.obs;
+  bool? wonGame;
   Map<String, dynamic> turnData = {
     'ownCardIndex': null,
     'oponentCardIndex': null,
@@ -23,27 +27,27 @@ class VSGame {
   VSGame(
     this.ownUser,
   ) {
-    ownTurn = firstTurn();
+    ownTurn.value = firstTurn();
     debugPrint('VSGame - created');
     debugPrint(
-        ownTurn ? 'VSGame - Spieler beginnt' : 'VSGame - Gegner beginnt');
+        ownTurn.value ? 'VSGame - Spieler beginnt' : 'VSGame - Gegner beginnt');
   }
 
   factory VSGame.joinGame(
       ElCardsUser ownUser, ElCardsOponent oponent, bool ownTurn) {
     VSGame game = VSGame(ownUser);
     game.oponent = oponent;
-    game.ownTurn = ownTurn;
+    game.ownTurn.value = ownTurn;
     debugPrint('VSGame - Spiel beigetreten');
     return game;
   }
 
   void setOwnCardIndex(int index) {
-    turnData['ownCardIndex'] = index;
+    turnData['ownCardIndexIndex'] = index;
   }
 
   void setOponentCardIndex(int index) {
-    turnData['oponentCardIndex'] = index;
+    turnData['oponentCardIndexIndex'] = index;
   }
 
   void setGameAction(int index) {
@@ -51,11 +55,11 @@ class VSGame {
   }
 
   int? getOwnCardIndex() {
-    return turnData['ownCardIndex'];
+    return turnData['ownCardIndexIndex'];
   }
 
   int? getOponentCardIndex() {
-    return turnData['oponentCardIndex'];
+    return turnData['oponentCardIndexIndex'];
   }
 
   ActionType? getActionType() {
@@ -64,131 +68,197 @@ class VSGame {
 
   void nextTurn() {
     //Wenn ein Spieler 3 Punkte erreicht, ist das Spiel beendet
-    if (ownPoints >= 3 || oponentPoints >= 3) {
+    if (ownPoints.value >= 3) {
       active = false;
-      debugPrint('VSGame - Ein Spieler hat gewonnen, Spiel beendet');
+      wonGame = true;
+      debugPrint('VSGame - Spieler hat gewonnen, Spiel beendet');
+      return;
+    }
+    if (oponentPoints.value >= 3) {
+      active = false;
+      wonGame = false;
+      debugPrint('VSGame - Gegner hat gewonnen, Spiel beendet');
       return;
     }
     //Eine Runde weiter
     turn++;
+    ownTurn.value = !ownTurn.value;
     debugPrint('VSGame - Neue Runde ($turn)');
     //Wenn 5 Runden gespielt, dann ist Spiel beendet
     if (turn > 5) {
       active = false;
       debugPrint('VSGame - 5 Runden gespielt, Spiel beendet');
+      if (ownPoints.value > oponentPoints.value) {
+        wonGame = true;
+        debugPrint(
+            'Spieler gewinnt mit ${ownPoints.value} zu ${oponentPoints.value}');
+      } else if (ownPoints.value < oponentPoints.value) {
+        wonGame = false;
+        debugPrint(
+            'Gegner gewinnt mit ${oponentPoints.value} zu ${ownPoints.value}');
+      }
     }
   }
 
   TurnResult calculateTurn(
-      int ownCard, int oponentCard, ActionType actionType) {
+      int ownCardIndex, int oponentCardIndex, ActionType actionType) {
     int ownValue;
     int oponentValue;
-    switch (actionType) {
-      case ActionType.attack:
-        debugPrint('VSGame - Angriff gewählt');
-        //Es wird selbst "Attack" gewählt
-        if (ownUser.cardDeck[ownCard]!.cardElement
-            .beats(oponent.cardDeck[oponentCard]!.cardElement)) {
-          //eigenes Element schlägt Gegner-Element
-          debugPrint(
-              'VSGame - ${ownUser.cardDeck[ownCard]!.cardElement} schlägt ${oponent.cardDeck[oponentCard]!.cardElement}, Gegner im Nachteil');
-          ownValue = ownUser.cardDeck[ownCard]!.attack;
-          oponentValue = oponent.cardDeck[oponentCard]!
-              .lowerAttack(); //Level Gegner eins niedriger
-        } else if (ownUser.cardDeck[ownCard]!.cardElement
-            .isBeatenBy(oponent.cardDeck[oponentCard]!.cardElement)) {
-          //Gegner-Element schlägt eigenes Element
-          //eigenes Level eins niedriger
-          debugPrint(
-              'VSGame - ${oponent.cardDeck[ownCard]!.cardElement} schlägt ${ownUser.cardDeck[oponentCard]!.cardElement}, Spieler im Nachteil');
-          ownValue = ownUser.cardDeck[ownCard]!.lowerAttack();
-          oponentValue = oponent
-              .cardDeck[oponentCard]!.attack; //Level Gegner eins niedriger
-        } else {
-          //Keine Element-Vorteile/Nachteile
-          //Level unverändert
-          debugPrint('VSGame - Keine Element-Vor-/oder Nachteile');
-          ownValue = ownUser.cardDeck[ownCard]!.attack;
-          oponentValue = oponent.cardDeck[oponentCard]!.attack;
-        }
-        break;
-      case ActionType.defend:
-        debugPrint('VSGame - Verteidigung gewählt');
-        //Es wird selbst "Defend" gewählt
-        if (ownUser.cardDeck[ownCard]!.cardElement
-            .beats(oponent.cardDeck[oponentCard]!.cardElement)) {
-          //eigenes Element schlägt Gegner-Element
-          debugPrint(
-              'VSGame - ${ownUser.cardDeck[ownCard]!.cardElement} schlägt ${oponent.cardDeck[oponentCard]!.cardElement}, Gegner im Nachteil');
-          ownValue = ownUser.cardDeck[ownCard]!.defense;
-          oponentValue = oponent.cardDeck[oponentCard]!
-              .lowerDefense(); //Level Gegner eins niedriger
-        } else if (ownUser.cardDeck[ownCard]!.cardElement
-            .isBeatenBy(oponent.cardDeck[oponentCard]!.cardElement)) {
-          //Gegner-Element schlägt eigenes Element
-          //eigenes Level eins niedriger
-          debugPrint(
-              'VSGame - ${oponent.cardDeck[ownCard]!.cardElement} schlägt ${ownUser.cardDeck[oponentCard]!.cardElement}, Spieler im Nachteil');
-          ownValue = ownUser.cardDeck[ownCard]!.lowerDefense();
-          oponentValue = oponent
-              .cardDeck[oponentCard]!.defense; //Level Gegner eins niedriger
-        } else {
-          //Keine Element-Vorteile/Nachteile
-          //Level unverändert
-          debugPrint('VSGame - Keine Element-Vor-/oder Nachteile');
-          ownValue = ownUser.cardDeck[ownCard]!.defense;
-          oponentValue = oponent.cardDeck[oponentCard]!.defense;
-        }
-        break;
-      case ActionType.escape:
-        debugPrint('VSGame - Flucht gewählt');
-        //Es wird selbst "Escape" gewählt
-        if (ownUser.cardDeck[ownCard]!.cardElement
-            .beats(oponent.cardDeck[oponentCard]!.cardElement)) {
-          //eigenes Element schlägt Gegner-Element
-          debugPrint(
-              'VSGame - ${ownUser.cardDeck[ownCard]!.cardElement} schlägt ${oponent.cardDeck[oponentCard]!.cardElement}, Gegner im Nachteil');
-          ownValue = ownUser.cardDeck[ownCard]!.speed;
-          oponentValue = oponent.cardDeck[oponentCard]!
-              .lowerSpeed(); //Level Gegner eins niedriger
-        } else if (ownUser.cardDeck[ownCard]!.cardElement
-            .isBeatenBy(oponent.cardDeck[oponentCard]!.cardElement)) {
-          //Gegner-Element schlägt eigenes Element
-          //eigenes Level eins niedriger
-          debugPrint(
-              'VSGame - ${oponent.cardDeck[ownCard]!.cardElement} schlägt ${ownUser.cardDeck[oponentCard]!.cardElement}, Spieler im Nachteil');
-          ownValue = ownUser.cardDeck[ownCard]!.lowerSpeed();
-          oponentValue = oponent
-              .cardDeck[oponentCard]!.speed; //Level Gegner eins niedriger
-        } else {
-          //Keine Element-Vorteile/Nachteile
-          //Level unverändert
-          debugPrint('VSGame - Keine Element-Vor-/oder Nachteile');
-          ownValue = ownUser.cardDeck[ownCard]!.speed;
-          oponentValue = oponent.cardDeck[oponentCard]!.speed;
-        }
-        break;
-      default:
-        debugPrint('VSGame - Fehler - Default im Switch');
-        ownValue = 0;
-        oponentValue = 0;
+
+    PlayingCard ownCard = ownUser.cardDeck[ownCardIndex]!;
+    PlayingCard oponentCard = oponent.cardDeck[oponentCardIndex]!;
+
+    CardElement ownElement = ownCard.cardElement;
+    CardElement oponentElement = oponentCard.cardElement;
+
+    debugPrint(
+        'VSGame - Eigenes Element: $ownElement Level:${ownUser.cardDeck[ownCardIndex]!.cardLevel}');
+    debugPrint(
+        'VSGame - Gegner Element: $oponentElement Level: ${oponent.cardDeck[oponentCardIndex]!.cardLevel}');
+    //Spieler wählt ActionType
+    if (ownTurn.value) {
+      debugPrint('VSGame --> Spieler wählt ActionType $actionType');
+      switch (actionType) {
+        case ActionType.attack:
+          //Spielers Attack-Wert gegen Gegners Defense-Wert
+          if (ownElement.beats(oponentElement)) {
+            //Wenn eigenes Element Gegner-Element schlägt, Gegner ein Level niedriger
+            ownValue = ownCard.attack;
+            oponentValue = oponentCard.lowerDefense();
+            debugPrint('VSGame - Dein $ownElement schlägt $oponentElement');
+          } else if (ownElement.isBeatenBy(oponentElement)) {
+            //Wenn eigenes Element von Gegner-Element geschlagen wird, Spieler ein Level niedriger
+            ownValue = ownCard.lowerAttack();
+            oponentValue = oponentCard.defense;
+            debugPrint(
+                'VSGame - Dein $ownElement wird von $oponentElement geschlagen');
+          } else {
+            //Kein Element schlägt das andere
+            ownValue = ownCard.attack;
+            oponentValue = oponentCard.defense;
+            debugPrint('VSGame - Kein Vorteil für beide');
+          }
+        case ActionType.defend:
+          //Spielers Defense-Wert gegen Gegners Attack-Wert
+          if (ownElement.beats(oponentElement)) {
+            //Wenn eigenes Element Gegner-Element schlägt, Gegner ein Level niedriger
+            ownValue = ownCard.defense;
+            oponentValue = oponentCard.lowerAttack();
+            debugPrint('VSGame - Dein $ownElement schlägt $oponentElement');
+          } else if (ownElement.isBeatenBy(oponentElement)) {
+            //Wenn eigenes Element von Gegner-Element geschlagen wird, Spieler ein Level niedriger
+            ownValue = ownCard.lowerDefense();
+            oponentValue = oponentCard.attack;
+            debugPrint(
+                'VSGame - Dein $ownElement wird von $oponentElement geschlagen');
+          } else {
+            //Kein Element schlägt das andere
+            ownValue = ownCard.defense;
+            oponentValue = oponentCard.attack;
+            debugPrint('VSGame - Kein Vorteil für beide');
+          }
+        case ActionType.escape:
+          //Beide Speed Werte
+          if (ownElement.beats(oponentElement)) {
+            //Wenn eigenes Element Gegner-Element schlägt, Gegner ein Level niedriger
+            ownValue = ownCard.speed;
+            oponentValue = oponentCard.lowerSpeed();
+            debugPrint('VSGame - Dein $ownElement schlägt $oponentElement');
+          } else if (ownElement.isBeatenBy(oponentElement)) {
+            //Wenn eigenes Element von Gegner-Element geschlagen wird, Spieler ein Level niedriger
+            ownValue = ownCard.lowerSpeed();
+            oponentValue = oponentCard.speed;
+            debugPrint(
+                'VSGame - Dein $ownElement wird von $oponentElement geschlagen');
+          } else {
+            //Kein Element schlägt das andere
+            ownValue = ownCard.speed;
+            oponentValue = oponentCard.speed;
+            debugPrint('VSGame - Kein Vorteil für beide');
+          }
+      }
+      //Gegner wähl ActionType
+    } else {
+      debugPrint('VSGame --> Gegner wählt ActionType $actionType');
+      switch (actionType) {
+        case ActionType.attack:
+          //Spielers Defense-Wert gegen Gegners Attack-Wert
+          if (ownElement.beats(oponentElement)) {
+            //Wenn eigenes Element Gegner-Element schlägt, Gegner ein Level niedriger
+            ownValue = ownCard.defense;
+            oponentValue = oponentCard.lowerAttack();
+            debugPrint('VSGame - Dein $ownElement schlägt $oponentElement');
+          } else if (ownElement.isBeatenBy(oponentElement)) {
+            //Wenn eigenes Element von Gegner-Element geschlagen wird, Spieler ein Level niedriger
+            ownValue = ownCard.lowerDefense();
+            oponentValue = oponentCard.attack;
+            debugPrint(
+                'VSGame - Dein $ownElement wird von $oponentElement geschlagen');
+          } else {
+            //Kein Element schlägt das andere
+            ownValue = ownCard.defense;
+            oponentValue = oponentCard.attack;
+            debugPrint('VSGame - Kein Vorteil für beide');
+          }
+        case ActionType.defend:
+          //Spielers Attack-Wert gegen Gegners Defense-Wert
+          if (ownElement.beats(oponentElement)) {
+            //Wenn eigenes Element Gegner-Element schlägt, Gegner ein Level niedriger
+            ownValue = ownCard.attack;
+            oponentValue = oponentCard.lowerDefense();
+            debugPrint('VSGame - Dein $ownElement schlägt $oponentElement');
+          } else if (ownElement.isBeatenBy(oponentElement)) {
+            //Wenn eigenes Element von Gegner-Element geschlagen wird, Spieler ein Level niedriger
+            ownValue = ownCard.lowerAttack();
+            oponentValue = oponentCard.defense;
+            debugPrint(
+                'VSGame - Dein $ownElement wird von $oponentElement geschlagen');
+          } else {
+            //Kein Element schlägt das andere
+            ownValue = ownCard.attack;
+            oponentValue = oponentCard.defense;
+            debugPrint('VSGame - Kein Vorteil für beide');
+          }
+        case ActionType.escape:
+          //Beide Speed Werte
+          if (ownElement.beats(oponentElement)) {
+            //Wenn eigenes Element Gegner-Element schlägt, Gegner ein Level niedriger
+            ownValue = ownCard.speed;
+            oponentValue = oponentCard.lowerSpeed();
+            debugPrint('VSGame - Dein $ownElement schlägt $oponentElement');
+          } else if (ownElement.isBeatenBy(oponentElement)) {
+            //Wenn eigenes Element von Gegner-Element geschlagen wird, Spieler ein Level niedriger
+            ownValue = ownCard.lowerSpeed();
+            oponentValue = oponentCard.speed;
+            debugPrint(
+                'VSGame - Dein $ownElement wird von $oponentElement geschlagen');
+          } else {
+            //Kein Element schlägt das andere
+            ownValue = ownCard.speed;
+            oponentValue = oponentCard.speed;
+            debugPrint('VSGame - Kein Vorteil für beide');
+          }
+      }
     }
+    debugPrint('VSGame - OwnValue: $ownValue OponentValue: $oponentValue');
     if (ownValue > oponentValue) {
-      ownPoints++;
+      ownPoints.value++;
+      oponentCard.reduceLivePoints();
       debugPrint(
-          'VSGame - Spieler gewinnt Runde - Punkte Spieler: $ownPoints, Punkte Gegner $oponentPoints');
+          'VSGame - Spieler gewinnt Runde - Punkte Spieler: ${ownPoints.value}, Punkte Gegner ${oponentPoints.value}');
       nextTurn();
 
       return TurnResult.beats;
     } else if (ownValue < oponentValue) {
-      oponentPoints++;
+      oponentPoints.value++;
+      ownCard.reduceLivePoints();
       debugPrint(
-          'VSGame - Gegner gewinnt Runde - Punkte Spieler: $ownPoints, Punkte Gegner $oponentPoints');
+          'VSGame - Gegner gewinnt Runde - Punkte Spieler: ${ownPoints.value}, Punkte Gegner ${oponentPoints.value}');
       nextTurn();
       return TurnResult.beaten;
     } else {
       debugPrint(
-          'VSGame - Keiner gewinnt Runde - Punkte Spieler: $ownPoints, Punkte Gegner $oponentPoints');
+          'VSGame - Keiner gewinnt Runde - Punkte Spieler: ${ownPoints.value}, Punkte Gegner ${oponentPoints.value}');
       nextTurn();
       return TurnResult.draw;
     }
@@ -196,5 +266,9 @@ class VSGame {
 
   bool firstTurn() {
     return Random().nextBool();
+  }
+
+  String printCardDecks() {
+    return ownUser.printCardDeck() + oponent.printCardDeck();
   }
 }

@@ -27,4 +27,12 @@ class ElCardsOponent {
       cardDeck,
     );
   }
+
+  String printCardDeck() {
+    String result = 'Oponent - Card - Deck:\n';
+    for (int i = 0; i < 5; i++) {
+      result = '$result${cardDeck[i]}\n';
+    }
+    return result;
+  }
 }

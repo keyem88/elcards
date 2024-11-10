@@ -14,8 +14,7 @@ class ShowCardView extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: CardWidget(
           card: card,
-          width: MediaQuery.of(context).size.width * 0.6,
-          height: MediaQuery.of(context).size.height * 0.2,
+          height: MediaQuery.of(context).size.height * 0.3,
         ),
       ),
     );

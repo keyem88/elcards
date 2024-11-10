@@ -56,4 +56,12 @@ class ElCardsUser {
       'cards': cardSet.toMap(),
     };
   }
+
+  String printCardDeck() {
+    String result = 'User - Card - Deck:\n';
+    for (int i = 0; i < 5; i++) {
+      result = result + cardDeck[i].toString() + '\n';
+    }
+    return result;
+  }
 }

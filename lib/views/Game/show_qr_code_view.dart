@@ -7,8 +7,8 @@ import 'package:myapp/models/User/user.dart';
 import 'package:myapp/utils/constants/app_constants.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-class JoinGameView extends StatelessWidget {
-  JoinGameView({
+class ShowQRCodeView extends StatelessWidget {
+  ShowQRCodeView({
     super.key,
     required this.user,
   }) {
@@ -47,7 +47,7 @@ class JoinGameView extends StatelessWidget {
                 data: jsonEncode({
                   'userId': controller!.user.userID,
                   'cards': jsonEncode(controller!.user.cardDeck),
-                  'firstTurn': jsonEncode(!controller!.game.ownTurn),
+                  'firstTurn': jsonEncode(!controller!.game.ownTurn.value),
                 }),
                 version: QrVersions.auto,
                 size: 200.0,

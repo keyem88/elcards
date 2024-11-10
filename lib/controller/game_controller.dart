@@ -49,8 +49,8 @@ class GameController extends GetxController {
     debugPrint('Init GameController');
     scannerController = MobileScannerController(
       useNewCameraSelector: true,
+      detectionSpeed: DetectionSpeed.noDuplicates,
     );
-
     PermissionChecker.checkCamera().then((value) {
       cameraPermission.value = value;
     });
@@ -178,7 +178,7 @@ class GameController extends GetxController {
     debugPrint('connectToDevice sendData');
     await Future.delayed(const Duration(seconds: 2));
     debugPrint(
-        'Send data: Connected $userName to ${connectedDevice!.deviceId}');
+        'Send data: Connected $userName to ${connectedDevice!.deviceId}, send Cards ${user.cardDeck}');
     sendData(
       {
         'connected': userName,
@@ -244,11 +244,13 @@ class GameController extends GetxController {
             PlayingCard(
               CardElement.byInt(element['element']),
               CardLevel.byInt(element['level']),
-              element['level'],
+              element['number'],
             ),
           );
         }
+        debugPrint('Nearby Service - $cardDeck');
         oponent = ElCardsOponent(receivedData['connected'], cardDeck);
+        game.oponent = oponent!;
         debugPrint('handleReceivedData - create oponent $oponent');
         Get.to(() => FightView(controller: this));
       } catch (e) {
@@ -274,15 +276,15 @@ class GameController extends GetxController {
       //Spieler agiert als Verteidiger
       //Gegner sendet Index der Karte und seinen gewählten ActionType
       oponent!.finishedTurn = true; //Daten vom Angreifer gehen ein
-      Get.showSnackbar(GetSnackBar(
+      /*Get.showSnackbar(GetSnackBar(
         message: '$data',
-      ));
+      ));*/
       game.setOponentCardIndex(receivedData['cardIndex']);
       game.setGameAction(receivedData['action']);
       if (user.finishTurn) {
         //Spieler hat Daten bereits abgeschickt und wartet
         Get.close(1); //"Warten auf Gegner" - Meldung ausblenden
-        calculateTurnResult();
+        await calculateTurnResult();
       } else {
         //Spieler hat Daten noch nicht abgeschickt
         //TODO: Rundenergebnis nach Absenden berechnen
@@ -297,7 +299,7 @@ class GameController extends GetxController {
       if (user.finishTurn) {
         //Spieler hat Daten bereits abgeschickt und wartet
         Get.close(1); //"Warten auf Gegner" - Meldung ausblenden
-        calculateTurnResult();
+        await calculateTurnResult();
         //TODO: Rundenergebnis berechnen
       } else {
         //Spieler hat Daten noch nicht abgeschickt
@@ -334,15 +336,37 @@ class GameController extends GetxController {
   Turn - Result
   */
 
-  void calculateTurnResult() {
+  Future<void> calculateTurnResult() async {
+    debugPrint(
+      game.printCardDecks(),
+    );
+
+    //Runde berechnen und Ergebnis ausgeben
     TurnResult turnresult = game.calculateTurn(game.getOwnCardIndex()!,
         game.getOponentCardIndex()!, game.getActionType()!);
-    Get.dialog(
-      SimpleDialog(
-        title: Text('Turnresult'),
-        children: [Text('$turnresult')],
-      ),
+
+    //Dialog zum Ausgang des Zuges
+    await Get.dialog(
+      showTurnResult(turnresult),
     );
+    if (game.active) {
+      //Zurücksetzen
+      oponent!.finishedTurn = false;
+      user.finishTurn = false;
+      //Bildschirm refreshen
+      update();
+    } else {
+      //Spielergebnis anzeigen
+      await Get.dialog(
+        showGameResult(),
+      );
+      //Verbindung trennen
+      nearbyService!.disconnectPeer(deviceID: connectedDevice!.deviceId);
+      //Alle Daten resetten
+      resetAllData();
+      //Zurück zur Startseite
+      Get.offAll(MainMenuView());
+    }
   }
 
   /*
@@ -368,7 +392,7 @@ class GameController extends GetxController {
       user.deselectAllCardsForTurn();
     }
     user.cardDeck[index]!.selectedForTurn.value = true;
-    if (game.ownTurn) {
+    if (game.ownTurn.value) {
       var result = await Get.dialog(
         showGameActionDialog(index),
       );
@@ -403,7 +427,7 @@ class GameController extends GetxController {
             },
             child: const Text("No")),
         ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               sendDataAsDefender(cardIndex);
               game.setOwnCardIndex(cardIndex);
               Get.close(1);
@@ -414,7 +438,7 @@ class GameController extends GetxController {
               } else {
                 //Gegnerdaten liegen bereits vor
                 //Rundenergebnis kann berechnet werden
-                calculateTurnResult();
+                await calculateTurnResult();
               }
             },
             child: const Text("Yes")),
@@ -432,57 +456,67 @@ class GameController extends GetxController {
       actionsOverflowButtonSpacing: 10,
       actionsOverflowAlignment: OverflowBarAlignment.center,
       actions: [
-        ElevatedButton(
-            onPressed: () {
-              sendDataAsAttacker(cardIndex, ActionType.attack);
-              game.setOwnCardIndex(cardIndex);
-              game.setGameAction(ActionType.attack.index);
-              Get.close(1);
-              if (oponent!.finishedTurn == false) {
-                //Gegner hat noch keine Daten gesendet
-                //Berechnung Rundenergebnis erst bei Eingang der Daten
-                Get.dialog(showWaitingOfOponentDialog());
-              } else {
-                //Gegnerdaten liegen bereits vor
-                //Rundenergebnis kann berechnet werden
-                calculateTurnResult();
-              }
-            },
-            child: const Text("Attack")),
-        ElevatedButton(
-            onPressed: () {
-              sendDataAsAttacker(cardIndex, ActionType.defend);
-              game.setOwnCardIndex(cardIndex);
-              game.setGameAction(ActionType.defend.index);
-              Get.close(1);
-              if (oponent!.finishedTurn == false) {
-                //Gegner hat noch keine Daten gesendet
-                //Berechnung Rundenergebnis erst bei Eingang der Daten
-                Get.dialog(showWaitingOfOponentDialog());
-              } else {
-                //Gegnerdaten liegen bereits vor
-                //Rundenergebnis kann berechnet werden
-                calculateTurnResult();
-              }
-            },
-            child: const Text("Defend")),
-        ElevatedButton(
-            onPressed: () {
-              sendDataAsAttacker(cardIndex, ActionType.escape);
-              game.setOwnCardIndex(cardIndex);
-              game.setGameAction(ActionType.escape.index);
-              Get.close(1);
-              if (oponent!.finishedTurn == false) {
-                //Gegner hat noch keine Daten gesendet
-                //Berechnung Rundenergebnis erst bei Eingang der Daten
-                Get.dialog(showWaitingOfOponentDialog());
-              } else {
-                //Gegnerdaten liegen bereits vor
-                //Rundenergebnis kann berechnet werden
-                calculateTurnResult();
-              }
-            },
-            child: const Text("Escape")),
+        TextButton.icon(
+          onPressed: () async {
+            sendDataAsAttacker(cardIndex, ActionType.attack);
+            game.setOwnCardIndex(cardIndex);
+            game.setGameAction(ActionType.attack.index);
+            Get.close(1);
+            if (oponent!.finishedTurn == false) {
+              //Gegner hat noch keine Daten gesendet
+              //Berechnung Rundenergebnis erst bei Eingang der Daten
+              Get.dialog(
+                showWaitingOfOponentDialog(),
+              );
+            } else {
+              //Gegnerdaten liegen bereits vor
+              //Rundenergebnis kann berechnet werden
+              await calculateTurnResult();
+            }
+          },
+          label: Text('Attack (${user.cardDeck[cardIndex]!.attack})'),
+          icon: const Icon(Icons.arrow_forward),
+        ),
+        TextButton.icon(
+          onPressed: () {
+            sendDataAsAttacker(cardIndex, ActionType.defend);
+            game.setOwnCardIndex(cardIndex);
+            game.setGameAction(ActionType.defend.index);
+            Get.close(1);
+            if (oponent!.finishedTurn == false) {
+              //Gegner hat noch keine Daten gesendet
+              //Berechnung Rundenergebnis erst bei Eingang der Daten
+              Get.dialog(showWaitingOfOponentDialog());
+            } else {
+              //Gegnerdaten liegen bereits vor
+              //Rundenergebnis kann berechnet werden
+              calculateTurnResult();
+            }
+          },
+          label: Text('Defend (${user.cardDeck[cardIndex]!.defense})'),
+          icon: const Icon(
+            Icons.arrow_back,
+          ),
+        ),
+        TextButton.icon(
+          onPressed: () {
+            sendDataAsAttacker(cardIndex, ActionType.escape);
+            game.setOwnCardIndex(cardIndex);
+            game.setGameAction(ActionType.escape.index);
+            Get.close(1);
+            if (oponent!.finishedTurn == false) {
+              //Gegner hat noch keine Daten gesendet
+              //Berechnung Rundenergebnis erst bei Eingang der Daten
+              Get.dialog(showWaitingOfOponentDialog());
+            } else {
+              //Gegnerdaten liegen bereits vor
+              //Rundenergebnis kann berechnet werden
+              calculateTurnResult();
+            }
+          },
+          label: Text('Escape (${user.cardDeck[cardIndex]!.speed})'),
+          icon: const Icon(Icons.speed),
+        ),
       ],
       content: const Text("Which move do you want to use?"),
     );
@@ -495,7 +529,112 @@ class GameController extends GetxController {
     );
   }
 
-  void showTurnResult() {
-    //Get.dialog(widget);
+  Widget showGameResult() {
+    switch (game.wonGame) {
+      //Unentschieden
+      case null:
+        return AlertDialog(
+          title: const Text('It\'s a draw,'),
+          content: Text('You two have achieved ${game.ownPoints} points.'),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Get.close(1);
+              },
+              child: const Text(
+                'OK',
+              ),
+            )
+          ],
+        );
+
+      //Spieler gewinnt
+      case true:
+        return AlertDialog(
+          title: const Text('You won'),
+          content: Column(
+            children: [
+              Text(
+                'Your Points: ${game.ownPoints}',
+              ),
+              Text(
+                'Oponent Points: ${game.oponentPoints}',
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Get.close(1);
+              },
+              child: const Text(
+                'OK',
+              ),
+            )
+          ],
+        );
+
+      //Gegner gewinnt
+      case false:
+        return AlertDialog(
+          title: const Text('You lost'),
+          content: Column(
+            children: [
+              Text(
+                'Your Points: ${game.ownPoints}',
+              ),
+              Text(
+                'Oponent Points: ${game.oponentPoints}',
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Get.close(1);
+              },
+              child: const Text(
+                'OK',
+              ),
+            )
+          ],
+        );
+    }
+  }
+
+  Widget showTurnResult(TurnResult result) {
+    return AlertDialog(
+      title: result == TurnResult.beats
+          ? const Text("You win the Turn!")
+          : result == TurnResult.beaten
+              ? const Text("You loose the Turn!")
+              : const Text("It's a draw!"),
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          const Text('YOU:'),
+          Text('${game.ownPoints}'),
+          const Text('OPONENT:'),
+          Text('${game.oponentPoints}')
+        ],
+      ),
+      backgroundColor: result == TurnResult.beats
+          ? Colors.green
+          : result == TurnResult.beaten
+              ? Colors.red
+              : Colors.yellow,
+      actions: [
+        ElevatedButton(
+          onPressed: () {
+            Get.close(
+              1,
+            );
+          },
+          child: const Text(
+            'OK',
+          ),
+        ),
+      ],
+    );
   }
 }

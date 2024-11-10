@@ -16,9 +16,11 @@ class FightView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double hight = MediaQuery.of(context).size.height;
+    debugPrint(hight.toString());
     return Scaffold(
       appBar: AppBar(
-        title: const Text('1 vs 1 Fight'),
+        title: const Text('VS-Game'),
         actions: [
           IconButton(
             onPressed: () {
@@ -36,28 +38,53 @@ class FightView extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Center(
-            child: Text(
-              (controller.game.ownTurn
-                  ? 'Du bist an der Reihe. Wähle deine Karte und deinen Zug!'
-                  : 'Der Gegner ist an der Reihe. Welche Karte möchtest du einsetzen?'),
-              style: const TextStyle(
-                fontSize: 24,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Obx(
+                () => Text.rich(
+                  TextSpan(children: [
+                    controller.game.ownTurn.value
+                        ? const WidgetSpan(child: Icon(Icons.arrow_forward))
+                        : const TextSpan(),
+                    TextSpan(text: 'Du: ${controller.game.ownPoints.value}')
+                  ]),
+                  style: const TextStyle(fontSize: 24),
+                ),
               ),
-              textAlign: TextAlign.center,
-            ),
+              Obx(
+                () => Text.rich(
+                  TextSpan(children: [
+                    controller.game.ownTurn.value
+                        ? const TextSpan()
+                        : const WidgetSpan(child: Icon(Icons.arrow_forward)),
+                    TextSpan(
+                        text: 'Gegner: ${controller.game.oponentPoints.value}')
+                  ]),
+                  style: const TextStyle(fontSize: 24),
+                ),
+              ),
+            ],
           ),
           Expanded(
             child: ListView.builder(
               shrinkWrap: true,
               itemBuilder: (context, index) => GestureDetector(
                 onTap: () {
-                  controller.clickCardInTurn(index, context);
+                  if (controller.game.ownUser.cardDeck[index]!.livePoints > 0) {
+                    controller.clickCardInTurn(index, context);
+                  } else {
+                    Get.showSnackbar(const GetSnackBar(
+                      message:
+                          'You can no longer choose the card because it no longer has any life points.',
+                    ));
+                  }
                 },
                 child: CardWidget(
-                    card: controller.user.cardDeck[index]!,
-                    width: 100,
-                    height: 500),
+                  card: controller.user.cardDeck[index]!,
+                  height: hight * 0.5,
+                  showLifePoints: true,
+                ),
               ),
               itemCount: 5,
               scrollDirection: Axis.horizontal,

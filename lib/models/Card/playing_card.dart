@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/models/Card/card_attributes.dart';
 import 'package:myapp/models/Card/card_element.dart';
@@ -17,6 +18,7 @@ class PlayingCard {
   late int defense;
   late int speed;
   late int maxLivePoints;
+  late int livePoints;
   late String name;
   late String description;
 
@@ -31,6 +33,7 @@ class PlayingCard {
     speed = (CardAttribute.attributes[cardNumber - 1]['speed']! * multiplicator)
         .ceil();
     maxLivePoints = cardLevel.maxLivePoints;
+    livePoints = maxLivePoints;
     name = CardAttribute().getName(cardElement, cardNumber);
     description = CardAttribute().getDescription(cardElement, cardNumber);
   }
@@ -50,18 +53,32 @@ class PlayingCard {
   }
 
   int lowerAttack() {
-    return CardAttribute.attributes[cardNumber - 1]['attack']! *
-        cardLevel.lowerMultiplicator.ceil();
+    int lowerAttackValue = (CardAttribute.attributes[cardNumber - 1]
+                ['attack']! *
+            cardLevel.lowerMultiplicator)
+        .ceil();
+    debugPrint('Normal Attack Value: $attack');
+    debugPrint('Lower Attack Value: $lowerAttackValue');
+    return lowerAttackValue;
   }
 
   int lowerDefense() {
-    return CardAttribute.attributes[cardNumber - 1]['defense']! *
-        cardLevel.lowerMultiplicator.ceil();
+    int lowerDefenseValue = (CardAttribute.attributes[cardNumber - 1]
+                ['defense']! *
+            cardLevel.lowerMultiplicator)
+        .ceil();
+    debugPrint('Normal Defense Value: $defense');
+    debugPrint('Lower Defense Value: $lowerDefenseValue');
+    return lowerDefenseValue;
   }
 
   int lowerSpeed() {
-    return CardAttribute.attributes[cardNumber - 1]['speed']! *
-        cardLevel.lowerMultiplicator.ceil();
+    int lowerSpeedValue = (CardAttribute.attributes[cardNumber - 1]['speed']! *
+            cardLevel.lowerMultiplicator)
+        .ceil();
+    debugPrint('Normal Speed Value: $speed');
+    debugPrint('Lower Speed Value: $lowerSpeedValue');
+    return lowerSpeedValue;
   }
 
   factory PlayingCard.random([Random? random]) {
@@ -79,5 +96,16 @@ class PlayingCard {
       'level': cardLevel.internalRepresentation,
       'number': cardNumber,
     };
+  }
+
+  void reduceLivePoints() {
+    if (livePoints > 0) {
+      livePoints--;
+    }
+  }
+
+  @override
+  String toString() {
+    return '$name - $cardElement - $cardLevel - A: $attack, D: $defense, S:$speed';
   }
 }

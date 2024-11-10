@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/controller/main_menu_controller.dart';
-import 'package:myapp/widgets/cards/small_selection_card.dart';
 
 import '../Cards/my_cards_view.dart';
 
@@ -34,7 +33,7 @@ class CardSelectionView extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
+          /* Expanded(
             flex: 1,
             child: GetBuilder(
               builder: (MainMenuController controller) => GridView.builder(
@@ -68,7 +67,7 @@ class CardSelectionView extends StatelessWidget {
                     }
                   }),
             ),
-          ),
+          ), */
           Container(
             color: Colors.white,
             width: double.infinity,

@@ -77,6 +77,14 @@ class MainMenuView extends StatelessWidget {
         }),
         bottomNavigationBar: Obx(
           () => BottomNavigationBar(
+            unselectedFontSize: 0.0,
+            selectedFontSize: 0.0,
+            type: BottomNavigationBarType.fixed,
+            showSelectedLabels: false,
+            showUnselectedLabels: false,
+            selectedItemColor: AppColors.primary,
+            unselectedItemColor: Colors.grey,
+            elevation: 0,
             backgroundColor: AppColors.foreground,
             items: const [
               BottomNavigationBarItem(
@@ -93,15 +101,10 @@ class MainMenuView extends StatelessWidget {
               ),
             ],
             currentIndex: controller.selectedIndex.value,
-            selectedItemColor: AppColors.primary,
             selectedIconTheme: IconThemeData(
               color: AppColors.primary,
               size: 40,
             ),
-            unselectedItemColor: Colors.grey,
-            showSelectedLabels: false,
-            showUnselectedLabels: true,
-            type: BottomNavigationBarType.fixed,
             onTap: controller.onItemTapped,
           ),
         ));

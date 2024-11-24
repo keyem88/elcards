@@ -6,6 +6,8 @@ import 'package:myapp/controller/game_controller.dart';
 import 'package:myapp/views/main_menu_view.dart';
 import 'package:myapp/widgets/cards/card_widget.dart';
 
+import '../../widgets/dialogs/turn_number.dart';
+
 class FightView extends StatelessWidget {
   const FightView({
     super.key,
@@ -71,14 +73,7 @@ class FightView extends StatelessWidget {
               shrinkWrap: true,
               itemBuilder: (context, index) => GestureDetector(
                 onTap: () {
-                  if (controller.game.ownUser.cardDeck[index]!.livePoints > 0) {
-                    controller.clickCardInTurn(index, context);
-                  } else {
-                    Get.showSnackbar(const GetSnackBar(
-                      message:
-                          'You can no longer choose the card because it no longer has any life points.',
-                    ));
-                  }
+                  controller.clickCardInTurn(index, context);
                 },
                 child: CardWidget(
                   card: controller.user.cardDeck[index]!,

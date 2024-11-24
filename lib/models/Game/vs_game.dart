@@ -17,6 +17,7 @@ class VSGame {
   int turn = 0;
   var ownPoints = 0.obs;
   var oponentPoints = 0.obs;
+  int _lastCardIndex = -1;
   bool? wonGame;
   Map<String, dynamic> turnData = {
     'ownCardIndex': null,
@@ -66,6 +67,22 @@ class VSGame {
     return turnData['gameAction'];
   }
 
+  PlayingCard? getOwnCard() {
+    return ownUser.cardDeck[getOwnCardIndex()!];
+  }
+
+  PlayingCard? getOponentCard() {
+    return oponent.cardDeck[getOponentCardIndex()!];
+  }
+
+  int getLastCardIndex() {
+    return _lastCardIndex;
+  }
+
+  void setLastCardIndex(int index) {
+    _lastCardIndex = index;
+  }
+
   void nextTurn() {
     //Wenn ein Spieler 3 Punkte erreicht, ist das Spiel beendet
     if (ownPoints.value >= 3) {
@@ -100,7 +117,7 @@ class VSGame {
     }
   }
 
-  TurnResult calculateTurn(
+  Map calculateTurn(
       int ownCardIndex, int oponentCardIndex, ActionType actionType) {
     int ownValue;
     int oponentValue;
@@ -248,19 +265,31 @@ class VSGame {
           'VSGame - Spieler gewinnt Runde - Punkte Spieler: ${ownPoints.value}, Punkte Gegner ${oponentPoints.value}');
       nextTurn();
 
-      return TurnResult.beats;
+      return {
+        'turnresult': TurnResult.beats,
+        'ownValue': ownValue,
+        'oponentValue': oponentValue
+      };
     } else if (ownValue < oponentValue) {
       oponentPoints.value++;
       ownCard.reduceLivePoints();
       debugPrint(
           'VSGame - Gegner gewinnt Runde - Punkte Spieler: ${ownPoints.value}, Punkte Gegner ${oponentPoints.value}');
       nextTurn();
-      return TurnResult.beaten;
+      return {
+        'turnresult': TurnResult.beaten,
+        'ownValue': ownValue,
+        'oponentValue': oponentValue
+      };
     } else {
       debugPrint(
           'VSGame - Keiner gewinnt Runde - Punkte Spieler: ${ownPoints.value}, Punkte Gegner ${oponentPoints.value}');
       nextTurn();
-      return TurnResult.draw;
+      return {
+        'turnresult': TurnResult.draw,
+        'ownValue': ownValue,
+        'oponentValue': oponentValue
+      };
     }
   }
 

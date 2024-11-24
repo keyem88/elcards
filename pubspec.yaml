@@ -41,15 +41,16 @@ dependencies:
   cloud_firestore: ^5.1.0
   flutter_login: ^5.0.0
   
-  mobile_scanner: ^5.1.1
+  mobile_scanner: ^6.0.2
   flutter_nearby_connections:
     git:
       url: https://github.com/champeauxr/flutter_nearby_connections
       ref: master
   permission_handler: ^11.3.1
   qr_flutter: ^4.1.0
-  device_info_plus: ^10.1.2
+  device_info_plus: ^11.1.1
   auto_size_text: ^3.0.0
+  vibration: ^2.0.1
   
 
 dev_dependencies:
@@ -62,7 +63,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:myapp/config/themes/app_colors.dart';
+import 'package:myapp/models/Card/card_element.dart';
 
 enum CardLevel {
   bronze(1),
@@ -86,6 +87,19 @@ enum CardLevel {
         return _multiplicators[1];
       case CardLevel.diamond:
         return _multiplicators[2];
+    }
+  }
+
+  CardLevel get lowerElement {
+    switch (this) {
+      case CardLevel.bronze:
+        return CardLevel.bronze;
+      case CardLevel.silver:
+        return CardLevel.bronze;
+      case CardLevel.gold:
+        return CardLevel.silver;
+      case CardLevel.diamond:
+        return CardLevel.gold;
     }
   }
 

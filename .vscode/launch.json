@@ -34,10 +34,16 @@
             "deviceId": "R3CT205XEZR"
         },
         {
+            "name": "Privathandy WLAN",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "192.168.2.73:35897"
+        },
+        {
             "name": "Arbeitshandy",
             "request": "launch",
             "type": "dart",
-            "deviceId": "R3CTA0XXYKY"
+            "deviceId": "192.168.2.160:45955"
         },
         {
             "name": "ChromeBrowser",

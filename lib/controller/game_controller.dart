@@ -15,7 +15,7 @@ import 'package:myapp/models/User/component.dart';
 import 'package:myapp/models/User/user.dart';
 
 import 'package:myapp/utils/constants/app_constants.dart';
-import 'package:myapp/views/Game/fight_view.dart';
+import 'package:myapp/views/VSGame/fight_view.dart';
 import 'package:myapp/views/main_menu_view.dart';
 import 'package:myapp/widgets/dialogs/turn_number.dart';
 import 'package:myapp/widgets/dialogs/turn_result.dart';

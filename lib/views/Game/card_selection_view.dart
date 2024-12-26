@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:myapp/config/themes/app_colors.dart';
 import 'package:myapp/controller/main_menu_controller.dart';
 
-import '../Cards/my_cards_view.dart';
+import '../MyCards/my_cards_view.dart';
 
 class CardSelectionView extends StatelessWidget {
   const CardSelectionView({super.key, required this.controller});
@@ -13,19 +14,10 @@ class CardSelectionView extends StatelessWidget {
   Widget build(BuildContext context) {
     controller.fiveCardsChoosen.value = false;
     return Scaffold(
+      backgroundColor: AppColors.primary,
       body: Column(
         children: [
-          Container(
-            width: double.infinity,
-            color: Colors.white,
-            child: const Text(
-              'Please select your Card-Deck',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 24),
-            ),
-          ),
           Expanded(
-            flex: 5,
             child: GetBuilder(
               builder: (MainMenuController controller) => MyCardsView(
                 asOverview: false,
@@ -68,35 +60,30 @@ class CardSelectionView extends StatelessWidget {
                   }),
             ),
           ), */
-          Container(
-            color: Colors.white,
-            width: double.infinity,
-            child: Obx(() => Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    ElevatedButton(
-                      onPressed: controller.fiveCardsChoosen.value
-                          ? () {
-                              controller.clickStartOwnGameButton();
-                            }
-                          : null,
-                      child: const Text(
-                        'Create Game!',
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: controller.fiveCardsChoosen.value
-                          ? () {
-                              controller.clickJoinGameButton();
-                            }
-                          : null,
-                      child: const Text(
-                        'Join Game!',
-                      ),
-                    ),
-                  ],
-                )),
-          )
+          Obx(() => ElevatedButton(
+                onPressed: controller.fiveCardsChoosen.value
+                    ? () {
+                        controller.createGame.value
+                            ? controller.clickStartOwnGameButton()
+                            : controller.clickJoinGameButton();
+                      }
+                    : null,
+                child: controller.createGame.value
+                    ? controller.fiveCardsChoosen.value
+                        ? Text(
+                            'Create Game!',
+                          )
+                        : Text(
+                            'Select 5 Cards!',
+                          )
+                    : controller.fiveCardsChoosen.value
+                        ? Text(
+                            'Join Game!',
+                          )
+                        : Text(
+                            'Select 5 Cards!',
+                          ),
+              ))
         ],
       ),
     );

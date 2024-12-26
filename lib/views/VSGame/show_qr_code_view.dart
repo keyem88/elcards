@@ -7,6 +7,8 @@ import 'package:myapp/models/User/user.dart';
 import 'package:myapp/utils/constants/app_constants.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../../config/themes/app_colors.dart';
+
 class ShowQRCodeView extends StatelessWidget {
   ShowQRCodeView({
     super.key,
@@ -24,33 +26,34 @@ class ShowQRCodeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.primary,
       body: Center(child: Obx(() {
         if (controller!.finishInit.value) {
           return Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               const Text(
                 textAlign: TextAlign.center,
-                'Let your component scan your Game-Code',
+                'Let your component scan your Game-Code to start VS-Game',
                 style: TextStyle(
                   fontSize: 24,
                 ),
               ),
-              Text(
-                textAlign: TextAlign.center,
-                'Own UserName: ${controller!.userName}',
-                style: const TextStyle(
-                  fontSize: 24,
+              Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(
+                      20,
+                    ),
+                    color: AppColors.primaryLight),
+                child: QrImageView(
+                  data: jsonEncode({
+                    'userId': controller!.user.userID,
+                    'cards': jsonEncode(controller!.user.cardDeck),
+                    'firstTurn': jsonEncode(!controller!.game.ownTurn.value),
+                  }),
+                  version: QrVersions.auto,
+                  size: 200.0,
                 ),
-              ),
-              QrImageView(
-                data: jsonEncode({
-                  'userId': controller!.user.userID,
-                  'cards': jsonEncode(controller!.user.cardDeck),
-                  'firstTurn': jsonEncode(!controller!.game.ownTurn.value),
-                }),
-                version: QrVersions.auto,
-                size: 200.0,
               ),
               ElevatedButton(
                   onPressed: controller!.clickCancelButton,

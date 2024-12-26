@@ -64,6 +64,19 @@ enum CardLevel {
     }
   }
 
+  String get asText {
+    switch (this) {
+      case CardLevel.bronze:
+        return 'bronze';
+      case CardLevel.silver:
+        return 'silver';
+      case CardLevel.gold:
+        return 'gold';
+      case CardLevel.diamond:
+        return 'diamond';
+    }
+  }
+
   double get multiplicator {
     switch (this) {
       case CardLevel.bronze:

@@ -4,12 +4,15 @@ import 'package:get/get.dart';
 import 'package:myapp/database/firebase/firestore_database.dart';
 
 import 'package:myapp/models/User/user.dart';
-import 'package:myapp/views/Cards/my_cards_view.dart';
+import 'package:myapp/views/Clans/clans_view.dart';
+import 'package:myapp/views/Home/home_view.dart';
+import 'package:myapp/views/MyCards/my_cards_view.dart';
 import 'package:myapp/views/Game/card_selection_view.dart';
 
-import 'package:myapp/views/Game/show_qr_code_view.dart';
-import 'package:myapp/views/Game/scan_qr_code_view.dart';
+import 'package:myapp/views/VSGame/show_qr_code_view.dart';
+import 'package:myapp/views/VSGame/scan_qr_code_view.dart';
 import 'package:myapp/utils/permissions/permission_checker.dart';
+import 'package:myapp/views/shop/shop_view.dart';
 
 import '../models/Card/playing_card.dart';
 import '../widgets/cards/card_widget.dart';
@@ -19,6 +22,7 @@ class MainMenuController extends GetxController {
   var isLoading = true.obs;
   var selectedIndex = 1.obs;
   late List<Widget> pages;
+  var createGame = true.obs;
 
   Rx<bool> fiveCardsChoosen = false.obs;
 
@@ -32,13 +36,18 @@ class MainMenuController extends GetxController {
       FirebaseAuth.instance.currentUser!.uid,
     );
     pages = [
-      CardSelectionView(
+      ClansView(
+        controller: this,
+      ),
+      HomeView(
         controller: this,
       ),
       MyCardsView(
         controller: this,
       ),
-      MyCardsView(controller: this),
+      ShopView(
+        controller: this,
+      ),
     ];
     isLoading.value = false;
     debugPrint('Is Loading: ${isLoading.value.toString()}');
@@ -54,6 +63,20 @@ class MainMenuController extends GetxController {
       fiveCardsChoosen.value = false;
     }
     update();
+  }
+
+  void clickOnModeChanger() {
+    debugPrint('clickOnModeChanger');
+    createGame.value = !createGame.value;
+    update();
+  }
+
+  void clickStartButton() {
+    Get.to(
+      () => CardSelectionView(
+        controller: this,
+      ),
+    );
   }
 
   void clickOnCard(BuildContext context, int index) {

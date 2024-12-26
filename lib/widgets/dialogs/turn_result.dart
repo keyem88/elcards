@@ -44,17 +44,14 @@ class _TurnResultDialogState extends State<TurnResultDialog> {
   }
 
   Future<void> _startTextChange() async {
-    int time = 0;
     _timer = Timer.periodic(
         const Duration(
           seconds: 2,
         ), (timer) async {
       if (currentIndex <= 3) {
-        debugPrint('timer: $time');
         setState(() {
           visibility[currentIndex] = true;
           currentIndex++;
-          time++;
         });
       } else {
         Future.delayed(
@@ -62,7 +59,7 @@ class _TurnResultDialogState extends State<TurnResultDialog> {
             seconds: 2,
           ),
         ).then((_) {
-          Get.close(1);
+          _timer?.cancel();
         });
       }
     });
@@ -83,6 +80,7 @@ class _TurnResultDialogState extends State<TurnResultDialog> {
           fontSize: 35,
           fontWeight: FontWeight.bold,
         ),
+        maxLines: 2,
       );
     } else {
       if (widget.result == TurnResult.beaten) {
@@ -286,7 +284,9 @@ class _TurnResultDialogState extends State<TurnResultDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: getTitle(),
-      content: widget.ownTurn ? getContentOwnTurn() : getContentOponentTurn(),
+      content: SingleChildScrollView(
+        child: widget.ownTurn ? getContentOwnTurn() : getContentOponentTurn(),
+      ),
       backgroundColor: Colors.transparent,
       /* result == TurnResult.beats
           ? Colors.green.shade100

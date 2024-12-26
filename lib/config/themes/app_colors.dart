@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-
   //AppTheme
   /*
   //OCEAN & LIME
@@ -21,17 +20,16 @@ class AppColors {
   static Color secondary = const Color(0xff4A7766);
   */
 
-   /*
+  /*
   //MOCHA & BLUSH
   static Color primary = const Color(0xff92736C);
   static Color secondary = const Color(0xffFDF1F5);
   */
 
-
   //DENIM & APRICOT
   static Color primary = const Color(0xff6579BE);
+  static Color primaryLight = const Color.fromARGB(255, 160, 176, 232);
   static Color secondary = const Color(0xffEAB099);
-
 
   /*
   //FOREST & ORCHID

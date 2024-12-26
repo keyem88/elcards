@@ -26,8 +26,20 @@ class ScanQRCodeView extends StatelessWidget {
     return Scaffold(
         body: GetBuilder<GameController>(
       builder: (controller) => !controller.cameraPermission.value
-          ? const Center(
-              child: CircularProgressIndicator(),
+          ? Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    const CircularProgressIndicator(),
+                    ElevatedButton(
+                      onPressed: () {
+                        controller.clickCancelButton();
+                      },
+                      child: const Text(
+                        'Cancel',
+                      ),
+                    ),
+                  ]),
             )
           : Stack(
               children: [
@@ -52,27 +64,6 @@ class ScanQRCodeView extends StatelessWidget {
             ),
       init: controller,
     ));
-
-    /*ListView.builder(
-          itemBuilder: (context, index) => GestureDetector(
-            onTap: () {
-              controller.connectToDevice(controller.devices[index].deviceName,
-                  controller.devices[index].deviceId);
-            },
-            child: ListTile(
-              title: Text(controller.devices[index].deviceName),
-              subtitle:
-                  controller.devices[index].state == SessionState.connected
-                      ? Text('Connected')
-                      : Text('Not Connected'),
-              tileColor:
-                  controller.devices[index].state == SessionState.connected
-                      ? Colors.green
-                      : Colors.white,
-            ),
-          ),
-          itemCount: controller.devices.length,
-        );*/
   }
 }
 

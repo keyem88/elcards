@@ -43,7 +43,7 @@ class CardWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           elevation: 5,
-          color: card.livePoints > 0 ? AppColors.primary : Colors.grey,
+          color: card.livePoints > 0 ? AppColors.primaryLight : Colors.grey,
           child: Stack(children: [
             Padding(
               padding: const EdgeInsets.all(8.0),

@@ -37,13 +37,13 @@
             "name": "Privathandy WLAN",
             "request": "launch",
             "type": "dart",
-            "deviceId": "192.168.2.73:35897"
+            "deviceId": "192.168.2.73:34547"
         },
         {
             "name": "Arbeitshandy",
             "request": "launch",
             "type": "dart",
-            "deviceId": "192.168.2.160:45955"
+            "deviceId": "R3CTA0XXYKY"
         },
         {
             "name": "ChromeBrowser",

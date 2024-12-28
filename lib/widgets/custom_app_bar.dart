@@ -3,172 +3,200 @@ import 'package:get/get.dart';
 import 'package:myapp/config/themes/app_colors.dart';
 
 import '../controller/main_menu_controller.dart';
+import '../database/firebase/auth.dart';
+import '../views/Other/sign_up_view.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({super.key, required this.controller});
-
-  final MainMenuController controller;
+class CustomAppBar extends GetView<MainMenuController>
+    implements PreferredSizeWidget {
+  const CustomAppBar({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          //Background
-          Column(
+    return controller.obx(
+      (state) {
+        return SafeArea(
+          child: Stack(
+            alignment: Alignment.center,
             children: [
-              Row(
+              //Background
+              Column(
                 children: [
-                  Container(
-                    height: preferredSize.height * 0.8,
-                    width: preferredSize.width * 0.85,
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryLight,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
+                  Row(
+                    children: [
+                      Container(
+                        height: preferredSize.height * 0.8,
+                        width: preferredSize.width * 0.85,
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryLight,
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(20),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                                color: AppColors.primaryLight.withOpacity(0.2),
+                                offset: Offset(0, 10),
+                                blurRadius: 3,
+                                spreadRadius: 0)
+                          ],
+                        ),
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                            color: AppColors.primaryLight.withOpacity(0.2),
-                            offset: Offset(0, 10),
-                            blurRadius: 3,
-                            spreadRadius: 0)
-                      ],
-                    ),
+                      Container(
+                        height: preferredSize.height * 0.8,
+                        width: preferredSize.width * 0.15,
+                        decoration: BoxDecoration(
+                          border: Border(
+                            left: BorderSide(
+                              color: Colors.black,
+                              width: 0.1,
+                            ),
+                          ),
+                          color: AppColors.primaryLight,
+                          borderRadius: BorderRadius.only(
+                            bottomRight: Radius.circular(
+                              20,
+                            ),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                                color: AppColors.primaryLight.withOpacity(0.2),
+                                offset: Offset(0, 10),
+                                blurRadius: 3,
+                                spreadRadius: 0)
+                          ],
+                        ),
+                        child: PopupMenuButton(
+                          icon: Icon(Icons.menu),
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              onTap: () {
+                                FirebaseAuthentication.signOut().then((_) {
+                                  Get.deleteAll();
+                                  Get.to(() => const SignUpView());
+                                });
+                              },
+                              child: Text(
+                                'Logout',
+                              ),
+                            ),
+                            PopupMenuItem(
+                              child: Text(
+                                'Settings',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                   Container(
-                    height: preferredSize.height * 0.8,
-                    width: preferredSize.width * 0.15,
                     decoration: BoxDecoration(
-                      border: Border(
-                        left: BorderSide(
-                          color: Colors.black,
-                          width: 0.1,
-                        ),
-                      ),
-                      color: AppColors.primaryLight,
-                      borderRadius: BorderRadius.only(
-                        bottomRight: Radius.circular(
-                          20,
-                        ),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                            color: AppColors.primaryLight.withOpacity(0.2),
-                            offset: Offset(0, 10),
-                            blurRadius: 3,
-                            spreadRadius: 0)
-                      ],
+                      color: Colors.transparent,
                     ),
-                    child: Icon(
-                      Icons.menu,
-                    ),
+                    height: preferredSize.height * 0.2,
                   ),
                 ],
               ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                ),
-                height: preferredSize.height * 0.2,
-              ),
-            ],
-          ),
-          //Foreground
-          //Avatar
-          Row(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 16,
-                ),
-                child: SizedBox(
-                  height: 100,
-                  child: Image.asset(
-                    'lib/assets/avatars/wizard.png',
-                  ),
-                ),
-              ),
-              //User Info
-              Wrap(
-                spacing: 5,
+              //Foreground
+              //Avatar
+              Row(
                 children: [
-                  Container(
+                  Padding(
                     padding: EdgeInsets.only(
-                      top: 5,
-                      right: 5,
-                      bottom: 5,
+                      left: 8,
                     ),
-                    height: 30,
-                    width: 85,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Image.asset('lib/assets/icons/star.png'),
-                        Text(
-                          '200',
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                    child: SizedBox(
+                      width: Get.height / 11,
+                      child: Image.asset(
+                        'lib/assets/avatars/${controller.user!.avatar}.png',
+                      ),
                     ),
                   ),
-                  Container(
-                    padding: EdgeInsets.only(
-                      top: 5,
-                      right: 5,
-                      bottom: 5,
-                    ),
-                    height: 30,
-                    width: 65,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Image.asset('lib/assets/icons/cards.png'),
-                        Text('700')
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(
-                      top: 5,
-                      right: 5,
-                      bottom: 5,
-                    ),
-                    height: 30,
-                    width: 85,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Image.asset(
-                          'lib/assets/icons/coin.png',
-                          scale: 0.5,
+                  //User Info
+                  Wrap(
+                    spacing: 5,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(
+                          top: 5,
+                          right: 5,
+                          bottom: 5,
                         ),
-                        Text(
-                          '2000',
-                          textAlign: TextAlign.center,
+                        height: 30,
+                        width: 85,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                      ],
-                    ),
-                  ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Image.asset('lib/assets/icons/star.png'),
+                            Text(
+                              '${controller.user!.exp}',
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(
+                          top: 5,
+                          right: 5,
+                          bottom: 5,
+                        ),
+                        height: 30,
+                        width: 65,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Image.asset('lib/assets/icons/cards.png'),
+                            Text(
+                              '${controller.user!.cardSet.cards.length}',
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(
+                          top: 5,
+                          right: 5,
+                          bottom: 5,
+                        ),
+                        height: 30,
+                        width: 85,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Image.asset(
+                              'lib/assets/icons/coin.png',
+                              scale: 0.5,
+                            ),
+                            Text(
+                              '${controller.user!.coins}',
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
                 ],
               )
             ],
-          )
-        ],
-      ),
+          ),
+        );
+      },
+      onLoading: CircularProgressIndicator(),
     );
   }
 

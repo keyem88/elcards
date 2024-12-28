@@ -8,6 +8,7 @@ import 'package:flutter_login/flutter_login.dart';
 import 'package:get/get.dart';
 import 'package:myapp/database/firebase/auth.dart';
 import 'package:myapp/views/Other/initial_loading.dart';
+import 'package:myapp/views/main_menu_view.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({Key? key}) : super(key: key);
@@ -24,7 +25,7 @@ class _SignUpViewState extends State<SignUpView> {
       onLogin: FirebaseAuthentication.onLogin,
       onSubmitAnimationCompleted: () {
         Get.to(
-          () => InitialLoadingView(),
+          () => MainMenuView(),
           transition: Transition.fade,
           duration: const Duration(
             milliseconds: 1000,

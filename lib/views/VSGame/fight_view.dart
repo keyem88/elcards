@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/controller/game_controller.dart';
+import 'package:myapp/controller/main_menu_controller.dart';
 import 'package:myapp/views/main_menu_view.dart';
 import 'package:myapp/widgets/cards/card_widget.dart';
 
@@ -94,7 +95,7 @@ class FightView extends StatelessWidget {
               onPressed: () {
                 controller
                     .disconnectDevice(controller.connectedDevice!.deviceId);
-                Get.offAll(MainMenuView());
+                Get.offAll(() => MainMenuView());
               },
               child: const Text(
                 'Disconnect',

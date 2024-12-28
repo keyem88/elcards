@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/database/firebase/firestore_database.dart';
+import 'package:myapp/models/Game/challenge.dart';
 
 import 'package:myapp/models/User/user.dart';
 import 'package:myapp/views/Clans/clans_view.dart';
@@ -17,7 +18,7 @@ import 'package:myapp/views/shop/shop_view.dart';
 import '../models/Card/playing_card.dart';
 import '../widgets/cards/card_widget.dart';
 
-class MainMenuController extends GetxController {
+class MainMenuController extends GetxController with StateMixin {
   ElCardsUser? user;
   var isLoading = true.obs;
   var selectedIndex = 1.obs;
@@ -26,8 +27,57 @@ class MainMenuController extends GetxController {
 
   Rx<bool> fiveCardsChoosen = false.obs;
 
+  List<Challenge> challenges = [
+    Challenge(
+      id: '1',
+      name: 'Startbonus',
+      description: 'Spiele dein erstes VS-Spiel gegen einen Freund',
+      duration: 1,
+      rewardedCoins: 5,
+    ),
+    Challenge(
+      id: '2',
+      name: 'Den Sieg kann dir keiner nehmen',
+      description: 'Gewinne dein erstes VS-Spiel gegen einen Freund',
+      duration: 1,
+      progress: 1,
+      isCompleted: true,
+      rewardedCoins: 5,
+    ),
+    Challenge(
+      id: '3',
+      name: 'Fünf auf einen Streich',
+      description: 'Gewinne fünf VS-Spiele gegen einen Freund',
+      duration: 5,
+      rewardedCoins: 10,
+      progress: 3,
+    ),
+    Challenge(
+      id: '4',
+      name: 'Sieben reichen nicht',
+      description: 'Kaufe dir zum ersten Mal etwas im Shop',
+      duration: 1,
+      rewardedCoins: 5,
+    ),
+    Challenge(
+      id: '5',
+      name: 'Selbst ist der Spieler',
+      description: 'Erstelle dein erstes VS-Spiel',
+      duration: 1,
+      rewardedCoins: 5,
+    ),
+    Challenge(
+      id: '6',
+      name: 'Lass das mal die anderen machen',
+      description: 'Tritt einem VS-Spiel bei',
+      duration: 1,
+      rewardedCoins: 5,
+    ),
+  ];
+
   @override
   void onInit() async {
+    change(null, status: RxStatus.loading());
     debugPrint('onInit');
     debugPrint(FirebaseAuth.instance.currentUser!.uid);
     debugPrint('Is Loading: ${isLoading.value.toString()}');
@@ -49,9 +99,17 @@ class MainMenuController extends GetxController {
         controller: this,
       ),
     ];
-    isLoading.value = false;
+    Future.delayed(
+      Duration(
+        seconds: 2,
+      ),
+    ).then((_) {
+      isLoading.value = false;
+    });
+
     debugPrint('Is Loading: ${isLoading.value.toString()}');
     super.onInit();
+    change(null, status: RxStatus.success());
   }
 
   void onItemTapped(int index) {
@@ -69,6 +127,15 @@ class MainMenuController extends GetxController {
     debugPrint('clickOnModeChanger');
     createGame.value = !createGame.value;
     update();
+  }
+
+  void clickOnChallenge(int index) {
+    debugPrint('clickOnChallenge $index');
+    if (challenges[index].isCompleted) {
+      debugPrint('Challenge completed');
+      challenges[index].closed = true;
+      update();
+    }
   }
 
   void clickStartButton() {

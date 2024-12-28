@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/config/themes/app_colors.dart';
-import 'package:myapp/utils/constants/app_constants.dart';
-import 'package:myapp/views/Other/sign_up_view.dart';
-import 'package:myapp/views/Settings/settings_view.dart';
 import 'package:myapp/widgets/custom_app_bar.dart';
 
 import '../controller/main_menu_controller.dart';
-import '../database/firebase/auth.dart';
 
 class MainMenuView extends StatelessWidget {
-  MainMenuView({super.key});
+  MainMenuView({
+    super.key,
+  });
 
-  final controller = Get.put(
-    MainMenuController(),
-  );
+  final MainMenuController controller = Get.put(MainMenuController());
 
   Duration duration = Duration(
     milliseconds: 500,
@@ -24,7 +20,7 @@ class MainMenuView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: AppColors.primary,
-        appBar: CustomAppBar(controller: controller),
+        appBar: CustomAppBar(),
         /* appBar:  AppBar(
           backgroundColor: AppColors.primary,
           title: Column(

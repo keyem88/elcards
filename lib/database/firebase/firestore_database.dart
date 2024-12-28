@@ -21,6 +21,8 @@ class FirestoreDatabase {
           )
           .set({
         'email': user.user?.email,
+        'exp': 0,
+        'coins': 20,
       });
       writes++;
       //Add cards to Firestore
@@ -53,7 +55,9 @@ class FirestoreDatabase {
           )
           .get();
       reads++;
+      debugPrint(userSnapshot.data().toString());
       if (!userSnapshot.exists) {
+        debugPrint('User not found');
         return null;
       }
       QuerySnapshot cardSnapshot = await firestore

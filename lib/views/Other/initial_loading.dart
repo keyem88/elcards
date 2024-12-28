@@ -5,7 +5,9 @@ import 'package:myapp/controller/main_menu_controller.dart';
 import '../main_menu_view.dart';
 
 class InitialLoadingView extends StatelessWidget {
-  InitialLoadingView({super.key});
+  InitialLoadingView({
+    super.key,
+  });
 
   final controller = Get.put(
     MainMenuController(),

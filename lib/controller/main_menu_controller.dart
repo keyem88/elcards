@@ -92,9 +92,7 @@ class MainMenuController extends GetxController with StateMixin {
       HomeView(
         controller: this,
       ),
-      MyCardsView(
-        controller: this,
-      ),
+      MyCardsView(),
       ShopView(
         controller: this,
       ),

@@ -1,14 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/controller/game_controller.dart';
-import 'package:myapp/controller/main_menu_controller.dart';
 import 'package:myapp/views/main_menu_view.dart';
 import 'package:myapp/widgets/cards/card_widget.dart';
 
 import '../../config/themes/app_colors.dart';
-import '../../widgets/dialogs/turn_number.dart';
 
 class FightView extends StatelessWidget {
   const FightView({
@@ -22,10 +18,10 @@ class FightView extends StatelessWidget {
   Widget build(BuildContext context) {
     double hight = MediaQuery.of(context).size.height;
     debugPrint(hight.toString());
-    return Scaffold(
-      backgroundColor: AppColors.primary,
-      body: SafeArea(
-        child: Column(
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: AppColors.primary,
+        body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Padding(

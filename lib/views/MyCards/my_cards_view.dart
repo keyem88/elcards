@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:myapp/config/themes/app_colors.dart';
 
 import '../../controller/main_menu_controller.dart';
@@ -6,11 +7,10 @@ import '../../controller/main_menu_controller.dart';
 class MyCardsView extends StatelessWidget {
   MyCardsView({
     super.key,
-    required this.controller,
     this.asOverview = true,
   });
 
-  final MainMenuController controller;
+  final MainMenuController controller = Get.find();
   final bool asOverview;
 
   @override
@@ -19,13 +19,13 @@ class MyCardsView extends StatelessWidget {
       'Build $runtimeType',
     );
     return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 8.0,
-        top: 8.0,
+      padding: const EdgeInsets.all(
+        8.0,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: Material(
+          color: AppColors.primaryLight,
           child: ListView.builder(
             shrinkWrap: true,
             itemCount: controller.user!.cardSet.cards.length,

@@ -9,17 +9,12 @@ import '../../models/User/user.dart';
 
 class ScanQRCodeView extends StatelessWidget {
   ScanQRCodeView({
-    super.key,
+    Key? key,
     required this.user,
-  }) {
-    controller = Get.put(GameController(
-      deviceType: DeviceType.browser,
-      user: user,
-    ));
-  }
+  }) : super(key: key);
 
   final ElCardsUser user;
-  GameController? controller;
+  //GameController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +57,7 @@ class ScanQRCodeView extends StatelessWidget {
                 )
               ],
             ),
-      init: controller,
+      init: GameController(user: user, deviceType: DeviceType.browser),
     ));
   }
 }

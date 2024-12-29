@@ -58,6 +58,7 @@ class GameController extends GetxController {
     );
     PermissionChecker.checkCamera().then((value) {
       cameraPermission.value = value;
+      //update();
     });
 
     initNearbyService().then((_) {

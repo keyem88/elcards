@@ -43,11 +43,7 @@ class CardWidget extends StatelessWidget {
 
   final bool lowerAttribute;
 
-  Color? levelColor;
-
-  void changeLevelColor(Color color) {
-    levelColor = color;
-  }
+  final Color? levelColor;
 
   @override
   Widget build(BuildContext context) {

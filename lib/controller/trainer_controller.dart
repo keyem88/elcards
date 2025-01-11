@@ -12,7 +12,6 @@ import 'package:vibration/vibration.dart';
 import '../models/Card/playing_card.dart';
 import '../utils/constants/app_constants.dart';
 import '../widgets/dialogs/turn_number.dart';
-import '../widgets/dialogs/turn_result.dart';
 
 class TrainerController extends GetxController with StateMixin {
   MainMenuController mainMenuController = Get.find();

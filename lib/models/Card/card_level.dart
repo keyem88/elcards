@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:myapp/config/themes/app_colors.dart';
-import 'package:myapp/models/Card/card_element.dart';
 
 enum CardLevel {
   bronze(1),

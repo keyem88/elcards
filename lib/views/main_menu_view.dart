@@ -13,7 +13,7 @@ class MainMenuView extends StatelessWidget {
 
   final MainMenuController controller = Get.put(MainMenuController());
 
-  Duration duration = Duration(
+  final Duration duration = Duration(
     milliseconds: 500,
   );
 

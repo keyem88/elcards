@@ -31,7 +31,6 @@ class NewTurnResult extends StatefulWidget {
 }
 
 class _NewTurnResultState extends State<NewTurnResult> {
-  Timer? _timer;
   final bool _ownvisible = true;
   bool _oponentvisible = false;
   bool _oponentAttackVisible = false;

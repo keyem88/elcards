@@ -34,6 +34,18 @@
             "deviceId": "R3CT205XEZR"
         },
         {
+            "name": "Pixel 9 Pro XL",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "49131FDAS0013V"
+        },
+        {
+            "name": "Tablet",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "R52T5056SKR"
+        },
+        {
             "name": "Privathandy WLAN",
             "request": "launch",
             "type": "dart",

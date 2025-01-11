@@ -114,8 +114,8 @@ class CustomAppBar extends GetView<MainMenuController>
                     ),
                   ),
                   //User Info
-                  Wrap(
-                    spacing: 5,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Container(
                         padding: EdgeInsets.only(

@@ -8,13 +8,21 @@ class AttributeCircle extends StatelessWidget {
   final double size;
   final List<Color> segmentColors;
   final PlayingCard card;
+  final bool attackVisible;
+  final bool defenseVisible;
+  final bool speedVisible;
+  final bool lowerAttribute;
 
-  const AttributeCircle(
-      {Key? key,
-      required this.size,
-      required this.segmentColors,
-      required this.card})
-      : super(key: key);
+  const AttributeCircle({
+    super.key,
+    required this.size,
+    required this.segmentColors,
+    required this.card,
+    required this.attackVisible,
+    required this.defenseVisible,
+    required this.speedVisible,
+    required this.lowerAttribute,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,21 +45,36 @@ class AttributeCircle extends StatelessWidget {
             top:
                 radius + textRadius * sin(i * 2 * pi / 3 + pi / 3) - textOffset,
             child: i == 0
-                ? AttribtueText(
-                    icon: Icons.arrow_forward,
-                    text: '${card.attack}',
-                    withDots: false,
+                ? Visibility(
+                    visible: attackVisible,
+                    child: AttribtueText(
+                      icon: Icons.arrow_forward,
+                      text: lowerAttribute
+                          ? '${card.lowerAttack()}'
+                          : '${card.attack}',
+                      withDots: false,
+                    ),
                   )
                 : i == 1
-                    ? AttribtueText(
-                        icon: Icons.arrow_back,
-                        text: '${card.defense}',
-                        withDots: false,
+                    ? Visibility(
+                        visible: defenseVisible,
+                        child: AttribtueText(
+                          icon: Icons.arrow_back,
+                          text: lowerAttribute
+                              ? '${card.lowerDefense()}'
+                              : '${card.defense}',
+                          withDots: false,
+                        ),
                       )
-                    : AttribtueText(
-                        icon: Icons.speed,
-                        text: '${card.speed}',
-                        withDots: false,
+                    : Visibility(
+                        visible: speedVisible,
+                        child: AttribtueText(
+                          icon: Icons.speed,
+                          text: lowerAttribute
+                              ? '${card.lowerSpeed()}'
+                              : '${card.speed}',
+                          withDots: false,
+                        ),
                       ),
           ),
         /* CircleAvatar(

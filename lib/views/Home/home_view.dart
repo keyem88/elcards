@@ -175,7 +175,7 @@ class HomeView extends StatelessWidget {
                   },
                   child: Container(
                       height: Get.height / 12,
-                      width: Get.height / 9,
+                      width: Get.height / 8,
                       decoration: BoxDecoration(
                         color: AppColors.primaryLight,
                         borderRadius: BorderRadius.only(
@@ -198,20 +198,24 @@ class HomeView extends StatelessWidget {
                       ),
                       child: Obx(
                         () => controller.createGame.value
-                            ? Column(
-                                children: [
-                                  Text(
-                                    'Spiel erstellen',
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  Text(
-                                    '(Zum Ändern klicken)',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 8,
+                            ? Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Spiel erstellen',
+                                      textAlign: TextAlign.center,
                                     ),
-                                  ),
-                                ],
+                                    Text(
+                                      '(Zum Ändern klicken)',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 8,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               )
                             : Column(
                                 children: [

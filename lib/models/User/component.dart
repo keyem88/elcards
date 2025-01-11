@@ -8,9 +8,10 @@ import 'package:myapp/models/Card/playing_card.dart';
 class ElCardsOponent {
   final String userID;
   final List<PlayingCard?> cardDeck;
+  final int avatar;
   bool finishedTurn = false;
 
-  ElCardsOponent(this.userID, this.cardDeck);
+  ElCardsOponent(this.userID, this.cardDeck, this.avatar);
 
   factory ElCardsOponent.fromMap(Map<String, dynamic> map) {
     List<PlayingCard?> cardDeck = [];
@@ -23,8 +24,9 @@ class ElCardsOponent {
     debugPrint(
         "ElCardsOponent.fromMap: ${cardData} lenght: ${cardData.length}");
     return ElCardsOponent(
-      "123",
+      map['userID'],
       cardDeck,
+      map['avatar'],
     );
   }
 

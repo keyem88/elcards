@@ -70,9 +70,7 @@ class MyCardsView extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            controller
-                                .user!.cardSet.cards[index].cardElement.asString
-                                .toUpperCase(),
+                            '${controller.user!.cardSet.cards[index].cardElement.asString.toUpperCase()} (${controller.user!.cardSet.cards[index].cardNumber})',
                           ),
                           Text(
                             '${controller.user!.cardSet.cards[index].valency}',

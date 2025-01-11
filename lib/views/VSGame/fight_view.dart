@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:myapp/controller/game_controller.dart';
 import 'package:myapp/views/main_menu_view.dart';
 import 'package:myapp/widgets/cards/card_widget.dart';
+import 'package:myapp/widgets/fight_app_bar.dart';
 
 import '../../config/themes/app_colors.dart';
 
@@ -20,43 +21,11 @@ class FightView extends StatelessWidget {
     debugPrint(hight.toString());
     return SafeArea(
       child: Scaffold(
+        appBar: FightAppBar(),
         backgroundColor: AppColors.primary,
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Obx(
-                    () => Text.rich(
-                      TextSpan(children: [
-                        controller.game.ownTurn.value
-                            ? const WidgetSpan(child: Icon(Icons.arrow_forward))
-                            : const TextSpan(),
-                        TextSpan(text: 'Du: ${controller.game.ownPoints.value}')
-                      ]),
-                      style: const TextStyle(fontSize: 24),
-                    ),
-                  ),
-                  Obx(
-                    () => Text.rich(
-                      TextSpan(children: [
-                        controller.game.ownTurn.value
-                            ? const TextSpan()
-                            : const WidgetSpan(
-                                child: Icon(Icons.arrow_forward)),
-                        TextSpan(
-                            text:
-                                'Gegner: ${controller.game.oponentPoints.value}')
-                      ]),
-                      style: const TextStyle(fontSize: 24),
-                    ),
-                  ),
-                ],
-              ),
-            ),
             Expanded(
               child: ListView.builder(
                 shrinkWrap: true,

@@ -7,9 +7,13 @@ import 'package:myapp/views/main_menu_view.dart';
 import '../MyCards/my_cards_view.dart';
 
 class CardSelectionView extends StatelessWidget {
-  const CardSelectionView({super.key, required this.controller});
+  CardSelectionView({
+    this.trainerMode = false,
+    super.key,
+  });
 
-  final MainMenuController controller;
+  final MainMenuController controller = Get.find();
+  final bool trainerMode;
 
   @override
   Widget build(BuildContext context) {
@@ -65,42 +69,56 @@ class CardSelectionView extends StatelessWidget {
               ),
             ), */
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: trainerMode
+                  ? MainAxisAlignment.center
+                  : MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Get.off(
-                      () => MainMenuView(),
-                    );
-                  },
-                  child: Text(
-                    'Cancel',
-                  ),
-                ),
+                trainerMode
+                    ? SizedBox()
+                    : ElevatedButton(
+                        onPressed: () {
+                          Get.off(
+                            () => MainMenuView(),
+                          );
+                        },
+                        child: Text(
+                          'Cancel',
+                        ),
+                      ),
                 Obx(
                   () => ElevatedButton(
                     onPressed: controller.fiveCardsChoosen.value
                         ? () {
-                            controller.createGame.value
-                                ? controller.clickStartOwnGameButton()
-                                : controller.clickJoinGameButton();
+                            trainerMode
+                                ? controller.startTrainerMode()
+                                : controller.createGame.value
+                                    ? controller.clickStartOwnGameButton()
+                                    : controller.clickJoinGameButton();
                           }
                         : null,
-                    child: controller.createGame.value
+                    child: trainerMode
                         ? controller.fiveCardsChoosen.value
                             ? Text(
-                                'Create Game!',
+                                'Start Training',
                               )
                             : Text(
-                                'Select 5 Cards!',
+                                'Choose 5 cards',
                               )
-                        : controller.fiveCardsChoosen.value
-                            ? Text(
-                                'Join Game!',
-                              )
-                            : Text(
-                                'Select 5 Cards!',
-                              ),
+                        : controller.createGame.value
+                            ? controller.fiveCardsChoosen.value
+                                ? Text(
+                                    'Create Game!',
+                                  )
+                                : Text(
+                                    'Select 5 Cards!',
+                                  )
+                            : controller.fiveCardsChoosen.value
+                                ? Text(
+                                    'Join Game!',
+                                  )
+                                : Text(
+                                    'Select 5 Cards!',
+                                  ),
                   ),
                 ),
               ],

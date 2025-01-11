@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:myapp/models/Card/playing_card.dart';
 
 class CardSet {
@@ -23,10 +24,20 @@ class CardSet {
     }
   }
 
-  factory CardSet.initialCards() {
+  List<PlayingCard> getRandomCardDeck({int amount = 5}) {
+    List<PlayingCard> cardDeck = [];
+    for (int i = 0; i < amount; i++) {
+      cardDeck.add(cards[i]);
+    }
+    return cardDeck;
+  }
+
+  factory CardSet.initialCards({int amount = 7}) {
     CardSet cardSet = CardSet();
-    for (int i = 0; i <= 7; i++) {
-      cardSet.addCard(PlayingCard.random());
+    for (int i = 0; i <= amount; i++) {
+      PlayingCard card = PlayingCard.random();
+      debugPrint('CardSet.initialCards: $card ${card.cardNumber}');
+      cardSet.addCard(card);
     }
     return cardSet;
   }

@@ -24,14 +24,12 @@ class PlayingCard {
 
   PlayingCard(this.cardElement, this.cardLevel, this.cardNumber) {
     double multiplicator = cardLevel.multiplicator;
-    attack =
-        (CardAttribute.attributes[cardNumber - 1]['attack']! * multiplicator)
-            .ceil();
-    defense =
-        (CardAttribute.attributes[cardNumber - 1]['defense']! * multiplicator)
-            .ceil();
-    speed = (CardAttribute.attributes[cardNumber - 1]['speed']! * multiplicator)
+    attack = (CardAttribute.attributes[cardNumber]['attack']! * multiplicator)
         .ceil();
+    defense = (CardAttribute.attributes[cardNumber]['defense']! * multiplicator)
+        .ceil();
+    speed =
+        (CardAttribute.attributes[cardNumber]['speed']! * multiplicator).ceil();
     maxLivePoints = cardLevel.maxLivePoints;
     livePoints = maxLivePoints;
     name = CardAttribute().getName(cardElement, cardNumber);
@@ -53,8 +51,7 @@ class PlayingCard {
   }
 
   int lowerAttack() {
-    int lowerAttackValue = (CardAttribute.attributes[cardNumber - 1]
-                ['attack']! *
+    int lowerAttackValue = (CardAttribute.attributes[cardNumber]['attack']! *
             cardLevel.lowerMultiplicator)
         .ceil();
     debugPrint('Normal Attack Value: $attack');
@@ -63,8 +60,7 @@ class PlayingCard {
   }
 
   int lowerDefense() {
-    int lowerDefenseValue = (CardAttribute.attributes[cardNumber - 1]
-                ['defense']! *
+    int lowerDefenseValue = (CardAttribute.attributes[cardNumber]['defense']! *
             cardLevel.lowerMultiplicator)
         .ceil();
     debugPrint('Normal Defense Value: $defense');
@@ -73,7 +69,7 @@ class PlayingCard {
   }
 
   int lowerSpeed() {
-    int lowerSpeedValue = (CardAttribute.attributes[cardNumber - 1]['speed']! *
+    int lowerSpeedValue = (CardAttribute.attributes[cardNumber]['speed']! *
             cardLevel.lowerMultiplicator)
         .ceil();
     debugPrint('Normal Speed Value: $speed');
@@ -86,7 +82,7 @@ class PlayingCard {
     return PlayingCard(
       CardElement.random(),
       CardLevel.random(),
-      CardAttribute.getRandomIndex() + 1,
+      CardAttribute.getRandomIndex(),
     );
   }
 

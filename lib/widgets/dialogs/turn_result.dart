@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/models/Card/playing_card.dart';
-import 'package:myapp/models/Game/vs_game.dart';
 import 'package:myapp/utils/constants/app_constants.dart';
 
 class TurnResultDialog extends StatefulWidget {
@@ -14,7 +13,6 @@ class TurnResultDialog extends StatefulWidget {
     required this.oponentCard,
     required this.actionType,
     required this.ownTurn,
-    required this.game,
     required this.ownValue,
     required this.oponentValue,
   });
@@ -24,7 +22,6 @@ class TurnResultDialog extends StatefulWidget {
   final PlayingCard oponentCard;
   final ActionType actionType;
   final bool ownTurn;
-  final VSGame game;
   final int ownValue;
   final int oponentValue;
 
@@ -36,6 +33,7 @@ class _TurnResultDialogState extends State<TurnResultDialog> {
   int currentIndex = 1;
   Timer? _timer;
   List<bool> visibility = [true, false, false, false];
+  bool exitButtonVisible = false;
 
   @override
   void initState() {
@@ -51,6 +49,10 @@ class _TurnResultDialogState extends State<TurnResultDialog> {
       if (currentIndex <= 3) {
         setState(() {
           visibility[currentIndex] = true;
+          visibility[currentIndex - 1] = false;
+          if (currentIndex == 3) {
+            exitButtonVisible = true;
+          }
           currentIndex++;
         });
       } else {
@@ -71,35 +73,92 @@ class _TurnResultDialogState extends State<TurnResultDialog> {
     super.dispose();
   }
 
-  Text getTitle() {
+  Row getTitle() {
     if (widget.result == TurnResult.beats) {
-      return const Text(
-        'Runde gewonnen!',
-        style: TextStyle(
-          color: Colors.green,
-          fontSize: 35,
-          fontWeight: FontWeight.bold,
-        ),
-        maxLines: 2,
+      return Row(
+        children: [
+          Expanded(
+            child: const Text(
+              'Runde gewonnen!',
+              style: TextStyle(
+                color: Colors.green,
+                fontSize: 35,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 2,
+            ),
+          ),
+          Visibility(
+            visible: exitButtonVisible,
+            child: GestureDetector(
+              onTap: () {
+                Get.back();
+              },
+              child: CircleAvatar(
+                child: Text(
+                  'X',
+                ),
+              ),
+            ),
+          )
+        ],
       );
     } else {
       if (widget.result == TurnResult.beaten) {
-        return const Text(
-          'Runde verloren!',
-          style: TextStyle(
-            color: Colors.red,
-            fontSize: 35,
-            fontWeight: FontWeight.bold,
-          ),
+        return Row(
+          children: [
+            Expanded(
+              child: const Text(
+                'Runde verloren!',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 35,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Visibility(
+              visible: exitButtonVisible,
+              child: GestureDetector(
+                onTap: () {
+                  Get.back();
+                },
+                child: CircleAvatar(
+                  child: Text(
+                    'X',
+                  ),
+                ),
+              ),
+            )
+          ],
         );
       } else {
-        return const Text(
-          'Unentschieden!',
-          style: TextStyle(
-            color: Colors.yellow,
-            fontSize: 35,
-            fontWeight: FontWeight.bold,
-          ),
+        return Row(
+          children: [
+            Expanded(
+              child: const Text(
+                'Unentschieden!',
+                style: TextStyle(
+                  color: Colors.yellow,
+                  fontSize: 35,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Visibility(
+              visible: exitButtonVisible,
+              child: GestureDetector(
+                onTap: () {
+                  Get.back();
+                },
+                child: CircleAvatar(
+                  child: Text(
+                    'X',
+                  ),
+                ),
+              ),
+            )
+          ],
         );
       }
     }

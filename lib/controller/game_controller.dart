@@ -24,7 +24,7 @@ import 'package:vibration/vibration.dart';
 import '../models/Card/playing_card.dart';
 import '../utils/permissions/permission_checker.dart';
 
-class GameController extends GetxController {
+class GameController extends GetxController with StateMixin {
   final DeviceType deviceType;
   late VSGame game;
   late String userName;
@@ -51,7 +51,11 @@ class GameController extends GetxController {
 
   @override
   void onInit() async {
+    change(null, status: RxStatus.loading());
     debugPrint('Init GameController');
+    if (scannerController != null) {
+      scannerController.stop();
+    }
     scannerController = MobileScannerController(
       useNewCameraSelector: true,
       detectionSpeed: DetectionSpeed.noDuplicates,
@@ -63,12 +67,12 @@ class GameController extends GetxController {
 
     initNearbyService().then((_) {
       finishInit.value = true;
-
+      if (deviceType == DeviceType.advicer) {
+        game = VSGame(user);
+      }
+      change(null, status: RxStatus.success());
       super.onInit();
     });
-    if (deviceType == DeviceType.advicer) {
-      game = VSGame(user);
-    }
   }
 
   @override
@@ -207,6 +211,7 @@ class GameController extends GetxController {
       {
         'connected': userName,
         'cards': jsonEncode(user.cardDeck),
+        'avatar': user.avatar,
       },
       connectedDevice!.deviceId,
     );
@@ -278,7 +283,11 @@ class GameController extends GetxController {
           );
         }
         debugPrint('Nearby Service - $cardDeck');
-        oponent = ElCardsOponent(receivedData['connected'], cardDeck);
+        oponent = ElCardsOponent(
+          receivedData['connected'],
+          cardDeck,
+          receivedData['avatar'],
+        );
         game.oponent = oponent!;
         debugPrint('handleReceivedData - create oponent $oponent');
         Get.to(() => FightView(controller: this));
@@ -393,7 +402,6 @@ class GameController extends GetxController {
         oponentCard: oponentCard,
         actionType: actionType,
         ownTurn: ownTurn,
-        game: game,
         ownValue: turnresult['ownValue'],
         oponentValue: turnresult['oponentValue'],
       ),

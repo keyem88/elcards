@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../models/Card/card_element.dart';
 
 class CardNames {
@@ -230,15 +232,16 @@ class CardNames {
   };
 
   static String getName(CardElement element, int cardNumber) {
+    debugPrint('CardNames getName: $element $cardNumber');
     switch (element) {
       case CardElement.air:
-        return namesAir.keys.elementAt(cardNumber - 1);
+        return namesAir.keys.elementAt(cardNumber);
       case CardElement.fire:
-        return namesFire.keys.elementAt(cardNumber - 1);
+        return namesFire.keys.elementAt(cardNumber);
       case CardElement.ground:
-        return namesGround.keys.elementAt(cardNumber - 1);
+        return namesGround.keys.elementAt(cardNumber);
       case CardElement.water:
-        return namesWater.keys.elementAt(cardNumber - 1);
+        return namesWater.keys.elementAt(cardNumber);
       default:
         return 'No Name';
     }

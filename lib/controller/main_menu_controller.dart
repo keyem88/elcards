@@ -9,6 +9,8 @@ import 'package:myapp/views/Clans/clans_view.dart';
 import 'package:myapp/views/Home/home_view.dart';
 import 'package:myapp/views/MyCards/my_cards_view.dart';
 import 'package:myapp/views/Game/card_selection_view.dart';
+import 'package:myapp/views/Trainer/trainer_fight_view.dart';
+import 'package:myapp/views/Trainer/trainer_view.dart';
 
 import 'package:myapp/views/VSGame/show_qr_code_view.dart';
 import 'package:myapp/views/VSGame/scan_qr_code_view.dart';
@@ -21,7 +23,7 @@ import '../widgets/cards/card_widget.dart';
 class MainMenuController extends GetxController with StateMixin {
   ElCardsUser? user;
   var isLoading = true.obs;
-  var selectedIndex = 1.obs;
+  var selectedIndex = 2.obs;
   late List<Widget> pages;
   var createGame = true.obs;
 
@@ -89,6 +91,7 @@ class MainMenuController extends GetxController with StateMixin {
       ClansView(
         controller: this,
       ),
+      TrainerView(),
       HomeView(
         controller: this,
       ),
@@ -138,9 +141,7 @@ class MainMenuController extends GetxController with StateMixin {
 
   void clickStartButton() {
     Get.to(
-      () => CardSelectionView(
-        controller: this,
-      ),
+      () => CardSelectionView(),
     );
   }
 
@@ -225,6 +226,13 @@ class MainMenuController extends GetxController with StateMixin {
       () => ScanQRCodeView(
         user: user!,
       ),
+    );
+  }
+
+  void startTrainerMode() {
+    debugPrint('startTrainerMode');
+    Get.off(
+      () => TrainerFightView(),
     );
   }
 

@@ -7,7 +7,7 @@ import 'package:myapp/utils/constants/app_constants.dart';
 
 import '../../models/User/user.dart';
 
-class ScanQRCodeView extends StatelessWidget {
+class ScanQRCodeView extends GetView<GameController> {
   ScanQRCodeView({
     Key? key,
     required this.user,
@@ -17,47 +17,39 @@ class ScanQRCodeView extends StatelessWidget {
   //GameController? controller;
 
   @override
+  late GameController controller;
+
+  @override
   Widget build(BuildContext context) {
+    controller = Get.put(
+      GameController(
+        user: user,
+        deviceType: DeviceType.browser,
+      ),
+    );
     return Scaffold(
-        body: GetBuilder<GameController>(
-      builder: (controller) => !controller.cameraPermission.value
-          ? Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    const CircularProgressIndicator(),
-                    ElevatedButton(
-                      onPressed: () {
-                        controller.clickCancelButton();
-                      },
-                      child: const Text(
-                        'Cancel',
-                      ),
-                    ),
-                  ]),
-            )
-          : Stack(
-              children: [
-                MobileScanner(
-                  controller: controller.scannerController,
-                  onDetect: controller.handleBarcode,
-                  errorBuilder: (
-                    BuildContext context,
-                    MobileScannerException error,
-                    Widget? child,
-                  ) {
-                    return ScannerErrorWidget(error: error);
-                  },
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: ElevatedButton(
-                      onPressed: controller.clickCancelButton,
-                      child: const Text('Cancel')),
-                )
-              ],
-            ),
-      init: GameController(user: user, deviceType: DeviceType.browser),
+        body: controller.obx(
+      (state) => Stack(
+        children: [
+          MobileScanner(
+            controller: controller.scannerController,
+            onDetect: controller.handleBarcode,
+            errorBuilder: (
+              BuildContext context,
+              MobileScannerException error,
+              Widget? child,
+            ) {
+              return ScannerErrorWidget(error: error);
+            },
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: ElevatedButton(
+                onPressed: controller.clickCancelButton,
+                child: const Text('Cancel')),
+          )
+        ],
+      ),
     ));
   }
 }

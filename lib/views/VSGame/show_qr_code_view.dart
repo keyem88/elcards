@@ -9,27 +9,28 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../config/themes/app_colors.dart';
 
-class ShowQRCodeView extends StatelessWidget {
+class ShowQRCodeView extends GetView<GameController> {
   ShowQRCodeView({
     super.key,
     required this.user,
-  }) {
-    controller = Get.put(GameController(
-      deviceType: DeviceType.advicer,
-      user: user,
-    ));
-  }
-
+  });
   final ElCardsUser user;
-  GameController? controller;
+  @override
+  late GameController controller;
 
   @override
   Widget build(BuildContext context) {
+    controller = Get.put(
+      GameController(
+        user: user,
+        deviceType: DeviceType.advicer,
+      ),
+    );
     return Scaffold(
       backgroundColor: AppColors.primary,
-      body: Center(child: Obx(() {
-        if (controller!.finishInit.value) {
-          return Column(
+      body: controller.obx(
+        (state) => Center(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               const Text(
@@ -47,23 +48,22 @@ class ShowQRCodeView extends StatelessWidget {
                     color: AppColors.primaryLight),
                 child: QrImageView(
                   data: jsonEncode({
-                    'userId': controller!.user.userID,
-                    'cards': jsonEncode(controller!.user.cardDeck),
-                    'firstTurn': jsonEncode(!controller!.game.ownTurn.value),
+                    'userId': controller.user.userID,
+                    'cards': jsonEncode(controller.user.cardDeck),
+                    'firstTurn': jsonEncode(!controller.game.ownTurn.value),
+                    'avatar': jsonEncode(controller.user.avatar),
                   }),
                   version: QrVersions.auto,
                   size: 200.0,
                 ),
               ),
               ElevatedButton(
-                  onPressed: controller!.clickCancelButton,
+                  onPressed: controller.clickCancelButton,
                   child: const Text('Cancel'))
             ],
-          );
-        } else {
-          return const CircularProgressIndicator();
-        }
-      })),
+          ),
+        ),
+      ),
     );
   }
 }

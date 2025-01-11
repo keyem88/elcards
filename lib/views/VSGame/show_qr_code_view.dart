@@ -16,7 +16,7 @@ class ShowQRCodeView extends GetView<GameController> {
   });
   final ElCardsUser user;
   @override
-  late GameController controller;
+  late final GameController controller;
 
   @override
   Widget build(BuildContext context) {

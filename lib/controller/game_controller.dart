@@ -53,9 +53,6 @@ class GameController extends GetxController with StateMixin {
   void onInit() async {
     change(null, status: RxStatus.loading());
     debugPrint('Init GameController');
-    if (scannerController != null) {
-      scannerController.stop();
-    }
     scannerController = MobileScannerController(
       useNewCameraSelector: true,
       detectionSpeed: DetectionSpeed.noDuplicates,

@@ -17,7 +17,7 @@ class ScanQRCodeView extends GetView<GameController> {
   //GameController? controller;
 
   @override
-  late GameController controller;
+  late final GameController controller;
 
   @override
   Widget build(BuildContext context) {

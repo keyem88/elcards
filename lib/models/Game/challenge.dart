@@ -1,32 +1,53 @@
-import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+enum ChallengeDifficulty { easy, medium, hard, other }
+
+enum ChallengeCategory { starter, special, normal }
+
+enum TaskType {
+  playGames,
+  startGames,
+  winGames,
+  earnCoins,
+  spendCoins,
+  sumCards,
+}
 
 class Challenge {
-  final String id;
-  final String name;
-  final String description;
-  final int duration; //Number of things to do
+  final String id; //Firebase - Id of the challenge
+  final String name; //Name of the challenge
+  final String description; //Description of the challenge shown to the user
+  final String
+      internalDescription; //Description of the challenge shown to the admin
   int progress; //Number of things you have done
+  bool isCompleted; //If the challenge is personally completed
+  final Timestamp created; //Date when the challenge was created
+  final int number; //Number of things to do
   final int
       rewardedCoins; //Number of coins you receive after completing the task
-  bool isCompleted;
-  bool closed = false;
-  DateTime? completeUntil;
-  Image? image;
-  String? category;
-  String? difficulty;
+  bool closed; //If the challenge is closed
+  final Duration duration; //Duration of the challenge
+  final int imageIndex; //Index of the image in the image list (-1 if no image)
+  ChallengeCategory category; //Category of the challenge
+  ChallengeDifficulty difficulty; //Difficulty of the challenge
+  TaskType taskType; //Type of the task
 
   Challenge({
     required this.id,
     required this.name,
     required this.description,
-    required this.duration,
+    required this.internalDescription,
+    required this.progress,
+    required this.isCompleted,
+    required this.created,
+    required this.number,
     required this.rewardedCoins,
-    this.completeUntil,
-    this.image,
-    this.category,
-    this.difficulty,
-    this.progress = 0,
-    this.isCompleted = false,
+    required this.closed,
+    required this.duration,
+    required this.imageIndex,
+    required this.category,
+    required this.difficulty,
+    required this.taskType,
   });
 
   void nextStep() {
@@ -37,28 +58,26 @@ class Challenge {
     }
   }
 
-  factory Challenge.fromJson(Map<String, dynamic> json) {
+  DateTime get completeUntil => created.toDate().add(duration);
+
+  factory Challenge.fromJson(
+      String id, Map<String, dynamic> json, int progress, bool iscompleted) {
     return Challenge(
-      id: json['_id'],
+      id: id,
       name: json['name'],
       description: json['description'],
-      category: json['category'],
-      difficulty: json['difficulty'],
-      duration: json['duration'],
+      internalDescription: json['internalDescription'],
+      created: json['created'],
+      closed: json['closed'],
+      duration: Duration(milliseconds: json['duration']),
+      imageIndex: json['imageIndex'],
+      category: ChallengeCategory.values[json['category']],
+      difficulty: ChallengeDifficulty.values[json['difficulty']],
+      number: json['number'],
       rewardedCoins: json['rewardedCoins'],
-      completeUntil: json['completeUntil'],
+      taskType: TaskType.values[json['taskType']],
+      progress: progress,
+      isCompleted: iscompleted,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'name': name,
-      'description': description,
-      'image': image,
-      'category': category,
-      'difficulty': difficulty,
-      'duration': duration,
-    };
   }
 }

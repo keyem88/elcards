@@ -132,7 +132,7 @@ class HomeView extends StatelessWidget {
                                             value: controller.challenges[index]
                                                     .progress /
                                                 controller
-                                                    .challenges[index].duration,
+                                                    .challenges[index].number,
                                             backgroundColor:
                                                 Colors.grey.withOpacity(
                                               0.3,

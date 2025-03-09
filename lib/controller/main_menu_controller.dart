@@ -29,53 +29,7 @@ class MainMenuController extends GetxController with StateMixin {
 
   Rx<bool> fiveCardsChoosen = false.obs;
 
-  List<Challenge> challenges = [
-    Challenge(
-      id: '1',
-      name: 'Startbonus',
-      description: 'Spiele dein erstes VS-Spiel gegen einen Freund',
-      duration: 1,
-      rewardedCoins: 5,
-    ),
-    Challenge(
-      id: '2',
-      name: 'Den Sieg kann dir keiner nehmen',
-      description: 'Gewinne dein erstes VS-Spiel gegen einen Freund',
-      duration: 1,
-      progress: 1,
-      isCompleted: true,
-      rewardedCoins: 5,
-    ),
-    Challenge(
-      id: '3',
-      name: 'Fünf auf einen Streich',
-      description: 'Gewinne fünf VS-Spiele gegen einen Freund',
-      duration: 5,
-      rewardedCoins: 10,
-      progress: 3,
-    ),
-    Challenge(
-      id: '4',
-      name: 'Sieben reichen nicht',
-      description: 'Kaufe dir zum ersten Mal etwas im Shop',
-      duration: 1,
-      rewardedCoins: 5,
-    ),
-    Challenge(
-      id: '5',
-      name: 'Selbst ist der Spieler',
-      description: 'Erstelle dein erstes VS-Spiel',
-      duration: 1,
-      rewardedCoins: 5,
-    ),
-    Challenge(
-      id: '6',
-      name: 'Lass das mal die anderen machen',
-      description: 'Tritt einem VS-Spiel bei',
-      duration: 1,
-      rewardedCoins: 5,
-    ),
-  ];
+  List<Challenge> challenges = [];
 
   @override
   void onInit() async {
@@ -87,6 +41,7 @@ class MainMenuController extends GetxController with StateMixin {
     user = await FirestoreDatabase.getUser(
       FirebaseAuth.instance.currentUser!.uid,
     );
+    challenges = await FirestoreDatabase.getChallenges();
     pages = [
       ClansView(
         controller: this,

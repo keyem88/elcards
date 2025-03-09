@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/models/Card/card_set.dart';
+import 'package:myapp/models/Game/challenge.dart';
 import 'package:myapp/models/User/user.dart';
 import 'package:myapp/utils/constants/database_constants.dart';
 
@@ -79,5 +80,26 @@ class FirestoreDatabase {
       debugPrint(e.message);
       return null;
     }
+  }
+
+  static Future<List<Challenge>> getChallenges() async {
+    List<Challenge> challenges = List<Challenge>.empty(
+      growable: true,
+    );
+    var firestore = FirebaseFirestore.instance;
+    debugPrint('getChallenges');
+    QuerySnapshot<Map<String, dynamic>> data =
+        await firestore.collection(DatabaseConstants.challenges).get();
+
+    for (var docSnapshot in data.docs) {
+      debugPrint('${docSnapshot.id} => ${docSnapshot.data()}');
+      Challenge challengeFromJson = Challenge.fromJson(docSnapshot.id,
+          docSnapshot.data(), 0, false); //TODO: progress and isCompleted
+      challenges.add(challengeFromJson);
+      debugPrint(
+        challenges.toString(),
+      );
+    }
+    return challenges;
   }
 }
